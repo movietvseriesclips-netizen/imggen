@@ -11,14 +11,29 @@
             <select id="iobp-batch-blend-mode">
                 <!-- Populated by JavaScript -->
             </select>
-            
+
             <label>Opacity:</label>
             <input type="range" id="iobp-batch-opacity" min="0" max="100" value="100" style="width: 120px;" />
             <span id="iobp-batch-opacity-value">100%</span>
-            
+
             <button id="iobp-batch-lock" class="button">🔒 Lock All</button>
             <button id="iobp-batch-unlock" class="button">🔓 Unlock All</button>
             <button id="iobp-batch-delete" class="button button-danger">🗑️ Delete All</button>
+        </div>
+
+        <!-- Phase 6: Alignment Tools -->
+        <div class="iobp-alignment-tools">
+            <label>Align:</label>
+            <button id="iobp-align-left" class="button iobp-align-btn" title="Align Left">⬅</button>
+            <button id="iobp-align-center" class="button iobp-align-btn" title="Align Center">↔</button>
+            <button id="iobp-align-right" class="button iobp-align-btn" title="Align Right">➡</button>
+            <button id="iobp-align-top" class="button iobp-align-btn" title="Align Top">⬆</button>
+            <button id="iobp-align-middle" class="button iobp-align-btn" title="Align Middle">↕</button>
+            <button id="iobp-align-bottom" class="button iobp-align-btn" title="Align Bottom">⬇</button>
+
+            <label style="margin-left: 15px;">Distribute:</label>
+            <button id="iobp-distribute-horizontal" class="button iobp-align-btn" title="Distribute Horizontally">⬌</button>
+            <button id="iobp-distribute-vertical" class="button iobp-align-btn" title="Distribute Vertically">⬍</button>
         </div>
     </div>
 
@@ -109,6 +124,22 @@
         <div class="iobp-control-group">
             <button id="iobp-start-blank" class="button">Blank Canvas</button>
             <button id="iobp-load-from-library" class="button">Load from Library</button>
+        </div>
+
+        <!-- Phase 6: Snapping Toggle -->
+        <div class="iobp-control-group iobp-snapping-control">
+            <label>
+                <input type="checkbox" id="iobp-snapping-enabled" checked />
+                Enable Snapping
+            </label>
+            <span class="iobp-tooltip" title="Magnetic guides help align objects precisely">ⓘ</span>
+        </div>
+
+        <!-- Phase 6: Layer Export -->
+        <div class="iobp-control-group iobp-export-control">
+            <label>Export:</label>
+            <button id="iobp-export-selected" class="button" title="Export selected layer as PNG">📥 Export Layer</button>
+            <button id="iobp-export-all-layers" class="button" title="Export all layers as separate PNG files">📦 Export All</button>
         </div>
 
         <div class="iobp-control-group">
