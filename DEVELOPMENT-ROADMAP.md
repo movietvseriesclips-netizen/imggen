@@ -1,0 +1,383 @@
+# Development Roadmap: Advanced Overlay Edit Features
+
+This roadmap details the implementation of Photoshop-style layer and shape management for the Editor (formerly Overlay Edit). Each phase delivers working, testable features. Testing steps are specified for each phase.
+
+---
+
+## Phase 1: Layer Panel & Basic Operations ✅ COMPLETED
+
+### Goals
+- Add a vertical layer panel in the editor.
+- List all objects (text, images, shapes) in order.
+- Layer selection, renaming, delete, hide (visibility toggle), and move up/down controls.
+- Drag-and-drop reordering.
+- Highlight the currently selected layer.
+- **Enhanced:** Renamed "Overlay Edit" to "Editor"
+- **Enhanced:** Save overlays directly to WordPress Media Library
+- **Enhanced:** Load overlays from Media Library on Image Overlay page
+
+### Testing Steps
+- Add multiple text and image objects — verify each appears as a layer.
+- Rename layers and confirm names change instantly.
+- Hide/show any layer and ensure it disappears/appears on the canvas.
+- Select a layer in the list — confirm the corresponding canvas object is selected.
+- Move layers up/down and use drag-and-drop — verify the stacking order changes.
+- Delete layers and ensure they are removed from both the panel and the canvas.
+- **New:** Save an overlay and verify it appears in WordPress Media Library.
+- **New:** Load overlay from Media Library on Image Overlay page and apply to images.
+
+### Implementation Notes
+- Overlays saved from Editor are stored in WordPress Media Library with metadata tags
+- Image Overlay page now supports both directory uploads and Media Library selection
+- Media Library overlays are filtered by canvas size dimensions
+- Backward compatibility maintained with existing directory-based overlays
+
+---
+
+## Phase 2: Opacity, Lock, and Group Layers ✅ COMPLETED
+
+### Goals
+- Add per-layer opacity slider.
+- Add lock/unlock toggle to prevent editing or moving a layer.
+- Basic layer grouping: create group, add/remove layers, collapse/expand groups, group-level show/hide and lock.
+
+### Testing Steps
+- Adjust opacity for any layer and confirm change visually.
+- Lock a layer; attempt to edit it from both the canvas and the panel — confirm it is immutable.
+- Create, collapse, expand, and rename groups; drag layers in and out of groups.
+- Hide/show and lock/unlock entire groups — verify all children inherit state.
+
+### Implementation Notes
+- **Opacity Control**: Each layer now has an opacity slider (0-100%) that adjusts transparency in real-time
+- **Lock/Unlock**: Locked layers cannot be selected, moved, scaled, or rotated on canvas; indicated with 🔒 icon
+- **Group Management**:
+  - Create groups with "+ Create Group" button
+  - Add layers to groups via "➡ Add to Group" button
+  - Remove layers from groups with "⬅ Ungroup" button
+  - Collapse/expand groups with ▶/▼ buttons
+  - Groups can be renamed, hidden/shown, and locked/unlocked
+  - Group visibility and lock state cascade to all child layers
+  - Groups have distinct visual styling with folder icon 📁
+- **Visual Indicators**:
+  - Locked layers have orange background highlight
+  - Hidden layers show at 50% opacity
+  - Locked icon: 🔒 (locked) / 🔓 (unlocked)
+  - Visibility icon: 👁️ (visible) / 👁️‍🗨️ (hidden)
+- **Drag-and-Drop**: Layer reordering continues to work within and outside of groups
+
+---
+
+## Phase 3: Shape Tools ✅ COMPLETED
+
+### Goals
+- Add toolbar buttons to create rectangles, ellipses/circles, lines, and triangles.
+- Support resizing, moving, and deleting shapes just like other objects.
+- Add shape color picker and border (stroke) options.
+
+### Testing Steps
+- Add each shape type and verify it can be resized, moved, and deleted.
+- Change fill and stroke color for shapes; confirm it updates.
+- Verify shapes are added as layers in the panel.
+
+### Implementation Notes
+- **Shape Creation**: One-click instant creation of rectangles, circles, triangles, and lines
+  - Shapes appear centered on canvas at predefined sizes
+  - Rectangle: 150x100px, Circle: 60px radius, Triangle: 120x100px, Line: 150px horizontal
+  - Each shape is immediately selectable and ready for manipulation
+- **Shape Properties**:
+  - **Fill Color**: Color picker with visual input, defaults to #3498db (blue)
+  - **Stroke Color**: Border color picker, defaults to #2c3e50 (dark gray)
+  - **Stroke Width**: Adjustable from 0-20px, defaults to 2px
+  - **"No Fill" Checkbox**: Creates transparent fill (hollow shapes with stroke only)
+  - **"No Stroke" Checkbox**: Sets stroke width to 0 (solid shapes with no border)
+  - Checkboxes disable corresponding color pickers when active (50% opacity)
+  - "Apply to Selected" button updates properties of existing selected shapes
+- **Eyedropper Tool** (💧):
+  - Click to activate color sampling mode
+  - Canvas cursor changes to crosshair for precision
+  - Click any point on canvas to sample exact color at that location
+  - Sampled color automatically fills the Fill color input field
+  - Press Escape key to deactivate and return to normal editing
+  - Active state indicated by button highlight and special canvas class
+- **Layer Integration**:
+  - All shapes automatically added to layer panel with descriptive names
+  - Auto-incrementing numbers: "Rectangle 1", "Circle 2", "Triangle 3", "Line 4"
+  - Full support for Phase 2 features (opacity, lock, visibility, grouping)
+  - Shapes can be renamed, reordered via drag-and-drop, and deleted
+  - Layer panel treats shapes identically to text and image objects
+- **Bug Fixes**:
+  - Fixed timing issue where shape button handlers bound before canvas initialization
+  - Added `bindShapeToolHandlers()` function called after canvas ready
+  - Comprehensive console logging throughout shape creation workflow
+  - Version bump to 1.4.0 to force JavaScript cache refresh on client browsers
+- **User Experience**:
+  - Real-time visual feedback for all property changes
+  - Shape tools work seamlessly on tablet and mobile devices
+  - No drawing mode — instant creation keeps workflow fast and simple
+  - Full backward compatibility with Phases 1 and 2 maintained
+
+---
+
+## Phase 4: Advanced Properties and Blend Modes ✅ COMPLETED
+
+### Goals
+- Add per-layer blend mode selection (Normal, Multiply, Screen, Overlay, etc.).
+- Support shape gradients (linear, radial) and opacity for fill and stroke.
+- Implement multi-selection and batch property edits for layers.
+
+### Testing Steps
+- Change blend modes for each object and visually verify compositing changes.
+- Apply gradients and different transparency/opacity settings — confirm visually correct.
+- Select multiple layers and batch edit their properties (color, opacity, etc.).
+
+### Implementation Notes
+- **Blend Modes**: Complete blend mode support using Canvas `globalCompositeOperation`
+  - 16 blend modes available: Normal (source-over), Multiply, Screen, Overlay, Darken, Lighten, Color Dodge, Color Burn, Hard Light, Soft Light, Difference, Exclusion, Hue, Saturation, Color, Luminosity
+  - Per-object blend mode dropdown in toolbar
+  - Blend mode applies to all object types (text, images, shapes)
+  - Batch blend mode editor for multiple selected objects
+  - Blend modes persist in layer state and survive canvas re-renders
+- **Gradient Support**: Advanced gradient fills for shapes
+  - **Gradient Types**: Solid Color (none), Linear Gradient, Radial Gradient
+  - **Color Stops**: Two-color gradients with independent opacity controls per stop
+  - **Linear Gradients**: Adjustable angle (0-360°) with visual angle display
+  - **Radial Gradients**: Center-to-edge gradient spread
+  - Gradient UI section with visual color pickers
+  - "Apply Gradient to Selected" button for instant preview
+  - Gradients work on rectangles, circles, triangles, and ellipses
+  - Gradients are true Fabric.js Gradient objects, not simulated
+- **Fill & Stroke Opacity**: Independent opacity controls
+  - Fill opacity slider (0-100%) separate from layer opacity
+  - Stroke opacity slider (0-100%) for shape borders
+  - Real-time visual feedback as sliders are adjusted
+  - Opacity values display as percentages next to sliders
+- **Multi-Selection**: Photoshop-style multi-select functionality
+  - Select multiple objects with Ctrl/Cmd + Click
+  - Multi-select toolbar appears when 2+ objects selected
+  - Shows count of selected objects
+  - Batch operations available:
+    - Blend mode dropdown (applies to all selected)
+    - Opacity slider (applies to all selected)
+    - Lock All / Unlock All buttons
+    - Delete All button (with confirmation)
+  - Multi-select toolbar styled with blue theme to indicate active state
+  - Visual feedback shows selected object count
+- **User Interface**:
+  - Advanced Properties section for blend modes
+  - Gradient section with collapsible controls
+  - Multi-select toolbar appears/hides automatically
+  - All controls follow consistent design language
+  - Responsive design adjustments for mobile/tablet
+- **Technical Implementation**:
+  - Fabric.js Gradient API for true gradient support
+  - globalCompositeOperation for blend mode rendering
+  - Enhanced selection event handlers for multi-select detection
+  - Batch operation functions iterate over selectedObjects array
+  - Version bump to 1.5.0 for cache refresh
+- **Backward Compatibility**:
+  - All Phase 1, 2, and 3 features continue to work
+  - Existing layers load without blend modes (default to Normal)
+  - Gradients are optional — solid colors still work as before
+  - No breaking changes to layer panel or group functionality
+
+---
+
+## Phase 5: Layer Groups & Boolean Operations ✅ COMPLETED
+
+### Goals
+- Implement nested group support.
+- Add boolean operations (union, subtract, intersect, exclude) for selected shapes.
+- Support grouping/ungrouping via shortcut and context menu.
+
+### Testing Steps
+- Create deep nested groups, then expand and collapse them.
+- Use boolean operations on 2+ selected shapes and verify new shape layer is correct.
+- Group and ungroup objects using menu and keyboard shortcuts.
+
+### Implementation Notes
+- **Nested Group Support**:
+  - Groups can now contain other groups (unlimited nesting depth)
+  - Visual indentation in layer panel shows group hierarchy
+  - "+ Nest Group" button on group headers creates child groups
+  - Collapse/expand controls work recursively through nested structure
+  - Visibility and lock states cascade through all nested levels
+  - Parent group visibility/lock overrides child group settings
+- **Keyboard Shortcuts**:
+  - **Ctrl/Cmd + G**: Group selected layers into a new group
+  - **Ctrl/Cmd + Shift + G**: Ungroup selected layer from its parent group
+  - **Delete/Backspace**: Delete selected layer
+  - **Ctrl/Cmd + D**: Duplicate selected layer
+  - **Arrow Keys**: Move selected layer (1px, or 10px with Shift)
+  - **Escape**: Deselect all or close eyedropper mode
+  - Keyboard shortcuts skip when typing in input fields
+- **Context Menu** (Right-Click):
+  - Duplicate layer
+  - Delete layer
+  - Toggle lock/unlock
+  - Toggle hide/show
+  - Add to group (submenu with group list)
+  - Remove from group
+  - Group selected (when multiple selected)
+  - Bring forward / Send backward
+  - Bring to front / Send to back
+  - Context menu appears at mouse position
+  - Automatically closes on outside click or action
+- **Boolean Operations**:
+  - Four boolean operations available: Union, Subtract, Intersect, Exclude
+  - Buttons appear in multi-select toolbar when 2+ shapes selected
+  - Operations work on: rectangles, circles, triangles, ellipses, polygons, paths
+  - Results are new path objects with full layer functionality
+  - Optional removal of original shapes after operation
+  - Simplified path-based implementation for WordPress compatibility
+  - Boolean operation buttons disabled for non-shape selections
+- **Duplicate Layer**:
+  - Creates exact copy of layer with all properties
+  - Duplicates placed offset (+20px right, +20px down)
+  - Name appended with " Copy"
+  - Preserves: opacity, blend mode, gradients, lock state, fill/stroke
+  - Works with all object types (text, images, shapes)
+- **Group Selected Layers**:
+  - Accessible via Ctrl/Cmd + G or context menu
+  - Creates new group containing all currently selected layers
+  - Minimum 2 layers required
+  - Auto-numbered group name ("Group 1", "Group 2", etc.)
+  - Grouped layers inherit initial group visibility/lock state
+- **User Experience**:
+  - Right-click anywhere on layer panel for quick actions
+  - Keyboard shortcuts provide professional workflow efficiency
+  - Context menu provides visual alternative to keyboard shortcuts
+  - All shortcuts and operations logged to console for debugging
+  - Smooth transitions and visual feedback throughout
+- **Technical Implementation**:
+  - Enhanced group data structure supports `groups[]` array for children
+  - Recursive functions handle nested group operations
+  - Path-based boolean operations using Fabric.js geometry
+  - Event handlers properly filter input field keystrokes
+  - Version bump to 1.6.0 for JavaScript cache refresh
+- **Backward Compatibility**:
+  - All Phase 1-4 features continue to work
+  - Existing flat groups load normally
+  - No breaking changes to layer panel or canvas functionality
+  - Boolean operations are purely additive (optional feature)
+
+---
+
+## Phase 6: UX Enhancements & Export
+
+### Goals
+- Add keyboard shortcuts for common operations (delete, duplicate, move, group, etc.).
+- Add context menus for layers (right-click for quick actions).
+- Support exporting individual layers or groups as separate images.
+- Add alignment tools and magnetic guides.
+- Polish UI for production.
+
+### Testing Steps
+- Use keyboard shortcuts for all mapped features — confirm they function correctly.
+- Right-click on layers and execute context menu actions.
+- Export selected layers/groups — confirm exports are correct and individually named.
+- Test alignment and snapping guides visually when moving objects.
+
+---
+
+**After each phase, perform manual tests according to the above steps and verify no regressions in previously delivered features. QA and user feedback are encouraged at all major steps.**
+
+---
+
+## Version History
+
+### Phase 1 - November 21, 2025
+- ✅ Layer panel with full functionality
+- ✅ Renamed "Overlay Edit" to "Editor" throughout the plugin
+- ✅ Save functionality now saves directly to WordPress Media Library
+- ✅ Image Overlay page can load overlays from both directory and Media Library
+- ✅ Overlays tagged with metadata for easy filtering
+- ✅ Backward compatibility maintained with existing directory-based overlays
+- ✅ Responsive design for mobile and tablet
+
+### Phase 2 - November 22, 2025
+- ✅ Per-layer opacity slider with real-time visual feedback (0-100%)
+- ✅ Lock/unlock toggle for layers to prevent editing
+- ✅ Visual indicators for locked (orange highlight) and hidden (50% opacity) layers
+- ✅ Canvas-level lock enforcement prevents locked objects from being modified
+- ✅ Group creation and management system
+- ✅ Add/remove layers to/from groups
+- ✅ Collapse/expand groups for better organization
+- ✅ Group-level visibility and lock controls that cascade to children
+- ✅ Group renaming functionality
+- ✅ Visual distinction for groups with folder icons and nested styling
+- ✅ "Add to Group" dropdown menu for ungrouped layers
+- ✅ Full backward compatibility with Phase 1 features
+
+### Phase 3 - November 22, 2025
+- ✅ Shape tools: Rectangle, Circle, Triangle, Line with one-click creation
+- ✅ Shapes appear instantly centered on canvas at predefined sizes
+- ✅ Shape properties panel: fill color, stroke color, stroke width (0-20px)
+- ✅ "No Fill" checkbox for hollow shapes (transparent fill, stroke only)
+- ✅ "No Stroke" checkbox for solid shapes (no border, fill only)
+- ✅ Eyedropper tool (💧) for sampling colors directly from canvas
+- ✅ "Apply to Selected" button for updating existing shape properties
+- ✅ Full layer panel integration with auto-named layers
+- ✅ All Phase 2 features work with shapes (opacity, lock, visibility, grouping)
+- ✅ Comprehensive console logging for debugging
+- ✅ Bug fix: Shape handler binding timing issue resolved
+- ✅ Version bump to 1.4.0 for JavaScript cache refresh
+- ✅ Full backward compatibility with Phases 1 and 2
+
+### Phase 4 - November 22, 2025
+- ✅ Blend mode support: 16 modes (Normal, Multiply, Screen, Overlay, Darken, Lighten, Color Dodge, Color Burn, Hard Light, Soft Light, Difference, Exclusion, Hue, Saturation, Color, Luminosity)
+- ✅ Per-layer blend mode dropdown in toolbar
+- ✅ Gradient support for shapes: Linear and Radial gradients
+- ✅ Two-color gradient stops with independent opacity controls (0-100%)
+- ✅ Linear gradient angle control (0-360°) with visual display
+- ✅ Radial gradient center-to-edge spread
+- ✅ Fill opacity and stroke opacity independent controls
+- ✅ Multi-selection support with Ctrl/Cmd + Click
+- ✅ Multi-select toolbar with batch operations:
+  - Batch blend mode editor
+  - Batch opacity slider
+  - Lock All / Unlock All buttons
+  - Delete All button with confirmation
+- ✅ Real-time visual feedback for all gradient and opacity changes
+- ✅ "Apply Gradient to Selected" button for instant preview
+- ✅ Gradient UI section with collapsible controls
+- ✅ Advanced Properties section for blend modes
+- ✅ Version bump to 1.5.0 for JavaScript cache refresh
+- ✅ Full backward compatibility with Phases 1, 2, and 3
+- ✅ Responsive design maintained for mobile and tablet
+
+### Phase 5 - November 22, 2025
+- ✅ Nested group support: groups can contain other groups (unlimited depth)
+- ✅ "+ Nest Group" button on group headers for creating child groups
+- ✅ Visual indentation showing group hierarchy in layer panel
+- ✅ Recursive visibility and lock cascading through all nested levels
+- ✅ Keyboard shortcuts:
+  - Ctrl/Cmd + G: Group selected layers
+  - Ctrl/Cmd + Shift + G: Ungroup selected layer
+  - Delete/Backspace: Delete layer
+  - Ctrl/Cmd + D: Duplicate layer
+  - Arrow keys: Move layer (1px or 10px with Shift)
+  - Escape: Deselect or close eyedropper
+- ✅ Right-click context menu on layers:
+  - Duplicate, Delete, Lock/Unlock, Hide/Show
+  - Add to group, Remove from group, Group selected
+  - Bring forward/backward, Bring to front/back
+- ✅ Boolean operations for shapes (Union, Subtract, Intersect, Exclude)
+- ✅ Boolean operation buttons in multi-select toolbar
+- ✅ Boolean operations work on rectangles, circles, triangles, ellipses, polygons, paths
+- ✅ Results are new path objects with full layer functionality
+- ✅ Duplicate layer feature with property preservation
+- ✅ Group selected layers feature (minimum 2 layers)
+- ✅ Enhanced group data structure with `groups[]` array
+- ✅ Recursive functions for nested group operations
+- ✅ Version bump to 1.6.0 for JavaScript cache refresh
+- ✅ Full backward compatibility with Phases 1, 2, 3, and 4
+- ✅ All keyboard shortcuts skip when typing in input fields
+- ✅ Context menu auto-closes on outside click or action
+
+---
+
+For ongoing feedback, please use the GitHub Issues and Pull Requests in this repository.
+
+---
+
+_Last updated: November 22, 2025 (Phase 5 Completed)_

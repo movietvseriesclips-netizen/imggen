@@ -1,0 +1,309 @@
+/* Admin Page Styles */
+.iobp-wrap {
+    max-width: 100%;
+    padding: 20px;
+}
+
+.iobp-container {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+}
+
+.iobp-section {
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.iobp-section:last-child {
+    border-bottom: none;
+}
+
+.iobp-section h2 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+/* Canvas Size Selector */
+.iobp-canvas-selector {
+    margin: 15px 0;
+}
+
+.iobp-canvas-selector label {
+    display: inline-block;
+    margin-right: 10px;
+    font-weight: 600;
+}
+
+.iobp-canvas-selector select {
+    padding: 5px 10px;
+}
+
+/* Upload Section */
+.iobp-upload-section {
+    margin-bottom: 20px;
+}
+
+#iobp-overlay-upload {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+/* Overlay List */
+.iobp-overlay-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.iobp-overlay-item {
+    border: 3px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    background: #f9f9f9;
+    position: relative;
+}
+
+.iobp-overlay-item:hover {
+    border-color: #999;
+}
+
+.iobp-overlay-item.selected {
+    border-color: #0073aa;
+    background: #e5f5ff;
+}
+
+.iobp-overlay-item img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.iobp-overlay-item .overlay-name {
+    font-size: 11px;
+    word-break: break-all;
+    margin-bottom: 5px;
+}
+
+.iobp-overlay-item .delete-overlay {
+    color: #a00;
+    text-decoration: none;
+    font-size: 11px;
+}
+
+.iobp-overlay-item .delete-overlay:hover {
+    color: #dc3232;
+}
+
+/* Controls */
+.iobp-controls {
+    margin-bottom: 15px;
+}
+
+.iobp-controls button {
+    margin-right: 10px;
+}
+
+/* Pagination Controls */
+.iobp-pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#iobp-pagination-info {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+}
+
+#iobp-pagination-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+#iobp-pagination-buttons button {
+    padding: 5px 12px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+#iobp-pagination-buttons button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#iobp-load-more {
+    background: #0073aa;
+    color: #fff;
+    border: 1px solid #006799;
+}
+
+#iobp-load-more:hover:not(:disabled) {
+    background: #005a87;
+}
+
+/* Image List */
+.iobp-image-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background: #f9f9f9;
+}
+
+.iobp-image-item {
+    border: 3px solid #ddd;
+    padding: 5px;
+    text-align: center;
+    cursor: pointer;
+    background: #fff;
+}
+
+.iobp-image-item:hover {
+    border-color: #999;
+}
+
+.iobp-image-item.selected {
+    border-color: #0073aa;
+    background: #e5f5ff;
+}
+
+.iobp-image-item img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.iobp-image-item .image-title {
+    font-size: 10px;
+    margin-top: 5px;
+    word-break: break-all;
+}
+
+/* Process Controls */
+.iobp-process-controls {
+    background: #f5f5f5;
+    padding: 15px;
+    border: 1px solid #ddd;
+}
+
+.iobp-process-controls p {
+    margin: 5px 0;
+}
+
+#iobp-process-btn {
+    margin-top: 15px;
+}
+
+/* Progress */
+.iobp-progress {
+    background: #fffbcc;
+    border: 1px solid #e6db55;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+/* Results */
+.iobp-results {
+    margin-top: 20px;
+}
+
+.iobp-result-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-left: 4px solid #0073aa;
+    background: #f0f0f0;
+}
+
+.iobp-result-item.success {
+    border-left-color: #46b450;
+    background: #ecf7ed;
+}
+
+.iobp-result-item.error {
+    border-left-color: #dc3232;
+    background: #f9e9e9;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .iobp-overlay-list {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+    }
+
+    .iobp-image-list {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 8px;
+        max-height: 400px;
+    }
+
+    .iobp-controls button {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .iobp-upload-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #iobp-overlay-upload,
+    #iobp-upload-btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .iobp-pagination-controls {
+        flex-direction: column;
+    }
+
+    #iobp-pagination-info {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    #iobp-pagination-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .iobp-wrap {
+        padding: 10px;
+    }
+
+    .iobp-container {
+        padding: 10px;
+    }
+
+    .iobp-overlay-list {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+
+    .iobp-image-list {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    }
+
+    #iobp-pagination-buttons button {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+}

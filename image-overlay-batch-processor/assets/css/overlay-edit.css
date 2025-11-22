@@ -1,0 +1,730 @@
+.iobp-overlay-editor-wrap {
+    width: 100%;
+    max-width: 100%;
+    margin: 20px auto;
+}
+
+.iobp-editor-main {
+    display: flex;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.iobp-editor-canvas-section {
+    flex: 1;
+}
+
+.iobp-editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    overflow-x: auto;
+}
+
+.iobp-control-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Phase 4: Multi-Select Toolbar */
+.iobp-multi-select-toolbar {
+    display: none;
+    background: #e3f2fd;
+    border: 2px solid #2196F3;
+    border-radius: 6px;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
+.iobp-multi-select-toolbar.active {
+    display: block;
+}
+
+.iobp-multi-select-header {
+    font-weight: 600;
+    color: #1976D2;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.iobp-multi-select-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.iobp-multi-select-controls label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+}
+
+.iobp-multi-select-controls select,
+.iobp-multi-select-controls input {
+    font-size: 13px;
+}
+
+/* Phase 4: Blend Mode & Advanced Properties */
+.iobp-advanced-properties {
+    background: #f5f5f5;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.iobp-advanced-properties label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #555;
+}
+
+#iobp-blend-mode {
+    min-width: 140px;
+    font-size: 13px;
+}
+
+/* Phase 4: Gradient Controls */
+.iobp-gradient-section {
+    background: #fff3e0;
+    border: 1px solid #ff9800;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.iobp-gradient-section h4 {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    color: #e65100;
+    font-weight: 600;
+}
+
+.iobp-gradient-controls {
+    display: none;
+}
+
+.iobp-gradient-controls.active {
+    display: block;
+}
+
+.iobp-gradient-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.iobp-gradient-row label {
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 60px;
+}
+
+.iobp-gradient-color-input {
+    width: 50px;
+    height: 30px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.iobp-opacity-input {
+    width: 80px;
+}
+
+.iobp-angle-display {
+    font-weight: 600;
+    color: #ff6f00;
+    min-width: 35px;
+}
+
+/* Phase 5: Boolean Operations */
+.iobp-boolean-operations {
+    background: #e8f5e9;
+    border: 1px solid #4CAF50;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.iobp-boolean-operations h4 {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+.iobp-boolean-btn-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.iobp-boolean-btn {
+    flex: 1;
+    min-width: 70px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 2px solid #4CAF50;
+    background: white;
+    color: #2e7d32;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.iobp-boolean-btn:hover {
+    background: #4CAF50;
+    color: white;
+    box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}
+
+.iobp-boolean-btn:active {
+    transform: scale(0.98);
+}
+
+/* Phase 5: Context Menu */
+.iobp-context-menu {
+    position: absolute;
+    background: white;
+    border: 2px solid #2196F3;
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    min-width: 180px;
+    padding: 4px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.iobp-context-menu-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.iobp-context-menu-item:hover {
+    background: #e3f2fd;
+    color: #1976D2;
+}
+
+.iobp-context-menu-separator {
+    height: 1px;
+    background: #ddd;
+    margin: 4px 0;
+}
+
+/* Shape Tools Styling */
+.iobp-shape-tools {
+    background: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.iobp-shape-tool-btn {
+    min-width: 40px;
+    height: 40px;
+    font-size: 20px;
+    padding: 4px 8px;
+    border: 2px solid #ccc;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.iobp-shape-tool-btn:hover {
+    border-color: #2196F3;
+    background: #e3f2fd;
+}
+
+.iobp-shape-tool-btn.active {
+    border-color: #2196F3;
+    background: #2196F3;
+    color: white;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
+}
+
+.iobp-shape-properties {
+    background: #f9f9f9;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.iobp-shape-properties label {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Eyedropper Button */
+.iobp-eyedropper-btn {
+    min-width: 36px;
+    height: 36px;
+    font-size: 18px;
+    padding: 4px;
+    border: 2px solid #ccc;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.iobp-eyedropper-btn:hover {
+    border-color: #4CAF50;
+    background: #e8f5e9;
+}
+
+.iobp-eyedropper-btn.active {
+    border-color: #4CAF50;
+    background: #4CAF50;
+    color: white;
+    box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}
+
+/* Eyedropper cursor */
+.iobp-eyedropper-active {
+    cursor: crosshair !important;
+}
+
+.iobp-font-manager {
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.iobp-font-manager h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.iobp-font-upload-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#iobp-font-upload-status {
+    font-size: 14px;
+    color: #666;
+}
+
+.iobp-font-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.iobp-font-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.iobp-font-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.iobp-delete-font {
+    font-size: 12px;
+    padding: 4px 8px;
+    height: auto;
+    line-height: 1.2;
+}
+
+.iobp-editor-canvas-wrap {
+    border: 1px solid #ccc;
+    padding: 10px;
+    background: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+}
+
+.iobp-editor-footer {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#iobp-overlay-filename {
+    min-width: 260px;
+}
+
+#iobp-overlay-canvas {
+    display: block;
+    border: 1px solid #999;
+}
+
+/* Layer Panel Styles */
+.iobp-layer-panel {
+    width: 300px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    max-height: 700px;
+}
+
+.iobp-layer-panel-header {
+    background: #f5f5f5;
+    padding: 12px 15px;
+    border-bottom: 1px solid #ccc;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.iobp-layer-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    min-height: 200px;
+}
+
+/* Create Group Button */
+.iobp-create-group-btn {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.iobp-create-group-btn:hover {
+    background: #1976D2;
+}
+
+/* Group Container */
+.iobp-group-container {
+    background: #f0f0f0;
+    border: 2px solid #bbb;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 8px;
+}
+
+.iobp-group-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    margin-bottom: 6px;
+}
+
+.iobp-group-name {
+    flex: 1;
+    font-weight: 600;
+    font-size: 13px;
+    color: #333;
+}
+
+.iobp-group-action-btn {
+    padding: 4px 10px;
+    font-size: 11px;
+    background: #fff;
+    border: 1px solid #999;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.iobp-group-action-btn:hover {
+    background: #f5f5f5;
+    border-color: #666;
+}
+
+.iobp-group-children {
+    margin-top: 6px;
+    padding-left: 12px;
+    border-left: 2px solid #999;
+}
+
+.iobp-group-children .iobp-layer-item {
+    margin-bottom: 6px;
+}
+
+/* Group Menu for Add to Group */
+.iobp-group-menu {
+    background: white;
+    border: 2px solid #2196F3;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10000;
+    min-width: 150px;
+}
+
+.iobp-group-menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.iobp-group-menu-item:hover {
+    background: #e3f2fd;
+}
+
+/* Layer Item Styles */
+.iobp-layer-item {
+    background: #f9f9f9;
+    border: 2px solid #ddd;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.iobp-layer-item:hover {
+    background: #f0f0f0;
+    border-color: #999;
+}
+
+.iobp-layer-item.iobp-layer-selected {
+    background: #e3f2fd;
+    border-color: #2196F3;
+    box-shadow: 0 0 0 1px #2196F3;
+}
+
+.iobp-layer-item.iobp-layer-hidden {
+    opacity: 0.5;
+}
+
+.iobp-layer-item.iobp-layer-locked-item {
+    background: #fff3e0;
+    border-color: #ff9800;
+}
+
+.iobp-layer-item.iobp-layer-locked-item:hover {
+    background: #ffe0b2;
+}
+
+.iobp-layer-item.iobp-layer-dragging {
+    opacity: 0.4;
+    cursor: move;
+}
+
+.iobp-layer-item.iobp-layer-drag-over {
+    border-top: 3px solid #2196F3;
+}
+
+.iobp-layer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.iobp-layer-name {
+    font-weight: 500;
+    font-size: 13px;
+    flex: 1;
+    color: #333;
+    word-break: break-word;
+}
+
+.iobp-layer-name-input {
+    font-weight: 500;
+    font-size: 13px;
+    padding: 2px 6px;
+    border: 1px solid #2196F3;
+    border-radius: 2px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.iobp-layer-type {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.iobp-layer-controls {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.iobp-layer-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 16px;
+    line-height: 1;
+    color: #666;
+    transition: color 0.2s;
+    border-radius: 3px;
+}
+
+.iobp-layer-btn:hover {
+    color: #333;
+    background: rgba(0,0,0,0.05);
+}
+
+.iobp-layer-btn.iobp-layer-btn-danger:hover {
+    color: #d32f2f;
+}
+
+.iobp-layer-btn[title="Visible"] {
+    font-size: 18px;
+}
+
+/* Opacity Control */
+.iobp-layer-opacity-control {
+    margin: 8px 0;
+    padding: 8px;
+    background: rgba(0,0,0,0.03);
+    border-radius: 3px;
+}
+
+.iobp-opacity-label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.iobp-opacity-label span {
+    color: #2196F3;
+    font-weight: 600;
+}
+
+.iobp-opacity-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.iobp-opacity-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #2196F3;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.iobp-opacity-slider::-webkit-slider-thumb:hover {
+    background: #1976D2;
+}
+
+.iobp-opacity-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #2196F3;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+}
+
+.iobp-opacity-slider::-moz-range-thumb:hover {
+    background: #1976D2;
+}
+
+.iobp-layer-actions {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid #ddd;
+    flex-wrap: wrap;
+}
+
+.iobp-layer-action-btn {
+    flex: 1;
+    min-width: 60px;
+    padding: 4px 8px;
+    font-size: 11px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.iobp-layer-action-btn:hover {
+    background: #f5f5f5;
+    border-color: #999;
+}
+
+.iobp-layer-empty {
+    text-align: center;
+    color: #999;
+    padding: 40px 20px;
+    font-size: 13px;
+}
+
+/* Phase 5: Keyboard Shortcuts Info */
+.iobp-shortcuts-info {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: #666;
+}
+
+.iobp-shortcuts-info strong {
+    color: #333;
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .iobp-editor-main {
+        flex-direction: column;
+    }
+    
+    .iobp-layer-panel {
+        width: 100%;
+        max-height: 400px;
+        order: 1;
+    }
+    
+    .iobp-editor-canvas-section {
+        order: 2;
+    }
+}
+
+@media (max-width: 850px) {
+    .iobp-editor-canvas-wrap {
+        overflow-x: scroll;
+    }
+}
