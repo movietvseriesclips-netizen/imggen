@@ -951,6 +951,209 @@
     cursor: crosshair !important;
 }
 
+/* Phase 6: Alignment Tools */
+.iobp-alignment-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 6px;
+    flex-wrap: wrap;
+}
+
+.iobp-alignment-tools label {
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    margin-right: 4px;
+}
+
+.iobp-align-btn {
+    padding: 8px 12px !important;
+    font-size: 16px !important;
+    background: white !important;
+    color: #667eea !important;
+    border: 2px solid white !important;
+    border-radius: 4px !important;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 40px;
+    font-weight: bold;
+}
+
+.iobp-align-btn:hover {
+    background: #f3f4f6 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.iobp-align-btn:active {
+    transform: translateY(0);
+}
+
+/* Phase 6: Snapping Control */
+.iobp-snapping-control {
+    background: #f0fdf4;
+    border: 2px solid #10b981;
+    border-radius: 4px;
+    padding: 8px 12px;
+}
+
+.iobp-snapping-control label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #065f46;
+    cursor: pointer;
+    user-select: none;
+}
+
+.iobp-snapping-control input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #10b981;
+}
+
+/* Phase 6: Export Control */
+.iobp-export-control {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+    border-radius: 4px;
+    padding: 8px 12px;
+}
+
+.iobp-export-control label {
+    font-weight: 600;
+    color: #92400e;
+    font-size: 13px;
+}
+
+.iobp-export-control button {
+    background: white !important;
+    color: #f59e0b !important;
+    border: 2px solid #f59e0b !important;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.iobp-export-control button:hover {
+    background: #f59e0b !important;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+}
+
+/* Phase 6: Tooltip Styles */
+.iobp-tooltip {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 18px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: help;
+    margin-left: 6px;
+    transition: all 0.2s;
+}
+
+.iobp-tooltip:hover {
+    background: #2563eb;
+    transform: scale(1.1);
+}
+
+/* Phase 6: Enhanced Button Styles */
+button[title] {
+    position: relative;
+}
+
+button[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-bottom: 6px;
+    pointer-events: none;
+    font-weight: normal;
+}
+
+button[title]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Phase 6: Loading State */
+.iobp-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.iobp-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: iobp-spin 1s linear infinite;
+}
+
+@keyframes iobp-spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Phase 6: Success/Error Feedback */
+.iobp-feedback-success {
+    background: #d1fae5;
+    border: 2px solid #10b981;
+    color: #065f46;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.iobp-feedback-error {
+    background: #fee2e2;
+    border: 2px solid #ef4444;
+    color: #991b1b;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 13px;
+    font-weight: 500;
+}
+
 /* ===================================
    MOBILE RESPONSIVE
    ================================ */

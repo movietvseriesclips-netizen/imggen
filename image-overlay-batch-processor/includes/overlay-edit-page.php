@@ -30,6 +30,21 @@
                 <button id="iobp-batch-delete" class="iobp-btn iobp-btn-sm iobp-btn-danger">Delete All</button>
             </div>
         </div>
+
+        <!-- Phase 6: Alignment Tools -->
+        <div class="iobp-alignment-tools">
+            <label>Align:</label>
+            <button id="iobp-align-left" class="button iobp-align-btn" title="Align Left">⬅</button>
+            <button id="iobp-align-center" class="button iobp-align-btn" title="Align Center">↔</button>
+            <button id="iobp-align-right" class="button iobp-align-btn" title="Align Right">➡</button>
+            <button id="iobp-align-top" class="button iobp-align-btn" title="Align Top">⬆</button>
+            <button id="iobp-align-middle" class="button iobp-align-btn" title="Align Middle">↕</button>
+            <button id="iobp-align-bottom" class="button iobp-align-btn" title="Align Bottom">⬇</button>
+
+            <label style="margin-left: 15px;">Distribute:</label>
+            <button id="iobp-distribute-horizontal" class="button iobp-align-btn" title="Distribute Horizontally">⬌</button>
+            <button id="iobp-distribute-vertical" class="button iobp-align-btn" title="Distribute Vertically">⬍</button>
+        </div>
     </div>
 
     <!-- Main Editor Layout -->
@@ -235,6 +250,42 @@
                         <div class="iobp-form-group">
                             <button id="iobp-delete-selected" class="iobp-btn iobp-btn-block">Delete Selected</button>
                             <button id="iobp-clear-all" class="iobp-btn iobp-btn-block iobp-btn-danger">Clear All</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 6: Snapping & Guides Section -->
+                <div class="iobp-sidebar-section">
+                    <button class="iobp-section-header" data-section="snapping">
+                        <span class="iobp-section-title">Snapping & Guides</span>
+                        <span class="iobp-section-arrow">▼</span>
+                    </button>
+                    <div class="iobp-section-content" id="section-snapping">
+                        <div class="iobp-form-group">
+                            <label class="iobp-checkbox">
+                                <input type="checkbox" id="iobp-snapping-enabled" checked />
+                                <span>Enable Magnetic Guides</span>
+                            </label>
+                            <p style="font-size: 11px; color: #a0a0a0; margin-top: 6px;">
+                                Automatically align objects to canvas edges and other objects
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 6: Export Section -->
+                <div class="iobp-sidebar-section">
+                    <button class="iobp-section-header" data-section="export">
+                        <span class="iobp-section-title">Export Layers</span>
+                        <span class="iobp-section-arrow">▼</span>
+                    </button>
+                    <div class="iobp-section-content" id="section-export">
+                        <div class="iobp-form-group">
+                            <button id="iobp-export-selected" class="iobp-btn iobp-btn-block">Export Selected Layer</button>
+                            <button id="iobp-export-all-layers" class="iobp-btn iobp-btn-block">Export All Layers</button>
+                            <p style="font-size: 11px; color: #a0a0a0; margin-top: 6px;">
+                                Export layers as separate PNG files
+                            </p>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
-    console.log('Overlay Edit JS Loading (Phase 5 - v1.6.0)...');
-    
+    console.log('Overlay Edit JS Loading (Phase 6 - v1.7.0)...');
+
     if (typeof fabric === 'undefined') {
         alert('Error: Fabric.js library failed to load. Please refresh the page.');
         return;
@@ -18,6 +18,16 @@ jQuery(document).ready(function($) {
     var selectedObjects = [];
     var contextMenuVisible = false;
     var currentContextTarget = null;
+
+    // Phase 6: Snapping and guides
+    var snappingEnabled = true;
+    var snapTolerance = 10; // pixels
+    var guideLines = [];
+    var aligningLineMargin = 4;
+    var aligningLineWidth = 1;
+    var aligningLineColor = 'rgb(0, 161, 255)';
+    var verticalLines = [];
+    var horizontalLines = [];
 
     // Phase 4: Blend modes supported by canvas globalCompositeOperation
     var blendModes = [
@@ -109,9 +119,31 @@ jQuery(document).ready(function($) {
                     top: e.target._lastTop || e.target.top
                 });
             } else if (e.target) {
+                // Phase 6: Snapping
+                if (snappingEnabled) {
+                    snapObject(e.target);
+                }
                 e.target._lastLeft = e.target.left;
                 e.target._lastTop = e.target.top;
             }
+        });
+
+        canvas.on('before:render', function() {
+            canvas.clearContext(canvas.contextTop);
+        });
+
+        canvas.on('after:render', function() {
+            // Phase 6: Draw guide lines
+            if (snappingEnabled) {
+                drawGuideLines();
+            }
+        });
+
+        canvas.on('mouse:up', function() {
+            // Phase 6: Clear guide lines after moving
+            verticalLines = [];
+            horizontalLines = [];
+            canvas.renderAll();
         });
 
         canvas.on('object:scaling', function(e) {
@@ -2112,6 +2144,417 @@ jQuery(document).ready(function($) {
         refreshLayerPanel();
     }
 
+    // ========================================
+    // PHASE 6: SNAPPING AND MAGNETIC GUIDES
+    // ========================================
+
+    function snapObject(target) {
+        if (!snappingEnabled || !target) return;
+
+        var objBounds = target.getBoundingRect();
+        var objLeft = objBounds.left;
+        var objTop = objBounds.top;
+        var objRight = objLeft + objBounds.width;
+        var objBottom = objTop + objBounds.height;
+        var objCenterX = objLeft + objBounds.width / 2;
+        var objCenterY = objTop + objBounds.height / 2;
+
+        var canvasWidth = canvas.getWidth();
+        var canvasHeight = canvas.getHeight();
+
+        verticalLines = [];
+        horizontalLines = [];
+
+        // Snap to canvas edges
+        if (Math.abs(objLeft) < snapTolerance) {
+            target.set({ left: target.left - objLeft });
+            verticalLines.push({ x: 0 });
+        }
+        if (Math.abs(objRight - canvasWidth) < snapTolerance) {
+            target.set({ left: target.left + (canvasWidth - objRight) });
+            verticalLines.push({ x: canvasWidth });
+        }
+        if (Math.abs(objCenterX - canvasWidth / 2) < snapTolerance) {
+            target.set({ left: target.left + (canvasWidth / 2 - objCenterX) });
+            verticalLines.push({ x: canvasWidth / 2 });
+        }
+        if (Math.abs(objTop) < snapTolerance) {
+            target.set({ top: target.top - objTop });
+            horizontalLines.push({ y: 0 });
+        }
+        if (Math.abs(objBottom - canvasHeight) < snapTolerance) {
+            target.set({ top: target.top + (canvasHeight - objBottom) });
+            horizontalLines.push({ y: canvasHeight });
+        }
+        if (Math.abs(objCenterY - canvasHeight / 2) < snapTolerance) {
+            target.set({ top: target.top + (canvasHeight / 2 - objCenterY) });
+            horizontalLines.push({ y: canvasHeight / 2 });
+        }
+
+        // Snap to other objects
+        canvas.getObjects().forEach(function(obj) {
+            if (obj === target || obj.layerId === target.layerId) return;
+
+            var otherBounds = obj.getBoundingRect();
+            var otherLeft = otherBounds.left;
+            var otherTop = otherBounds.top;
+            var otherRight = otherLeft + otherBounds.width;
+            var otherBottom = otherTop + otherBounds.height;
+            var otherCenterX = otherLeft + otherBounds.width / 2;
+            var otherCenterY = otherTop + otherBounds.height / 2;
+
+            // Vertical snapping
+            if (Math.abs(objLeft - otherLeft) < snapTolerance) {
+                target.set({ left: target.left + (otherLeft - objLeft) });
+                verticalLines.push({ x: otherLeft });
+            }
+            if (Math.abs(objRight - otherRight) < snapTolerance) {
+                target.set({ left: target.left + (otherRight - objRight) });
+                verticalLines.push({ x: otherRight });
+            }
+            if (Math.abs(objCenterX - otherCenterX) < snapTolerance) {
+                target.set({ left: target.left + (otherCenterX - objCenterX) });
+                verticalLines.push({ x: otherCenterX });
+            }
+
+            // Horizontal snapping
+            if (Math.abs(objTop - otherTop) < snapTolerance) {
+                target.set({ top: target.top + (otherTop - objTop) });
+                horizontalLines.push({ y: otherTop });
+            }
+            if (Math.abs(objBottom - otherBottom) < snapTolerance) {
+                target.set({ top: target.top + (otherBottom - objBottom) });
+                horizontalLines.push({ y: otherBottom });
+            }
+            if (Math.abs(objCenterY - otherCenterY) < snapTolerance) {
+                target.set({ top: target.top + (otherCenterY - objCenterY) });
+                horizontalLines.push({ y: otherCenterY });
+            }
+        });
+
+        target.setCoords();
+    }
+
+    function drawGuideLines() {
+        if (!canvas || !canvas.contextTop) return;
+
+        var ctx = canvas.contextTop;
+        ctx.strokeStyle = aligningLineColor;
+        ctx.lineWidth = aligningLineWidth;
+
+        verticalLines.forEach(function(line) {
+            ctx.beginPath();
+            ctx.moveTo(line.x + 0.5, 0);
+            ctx.lineTo(line.x + 0.5, canvas.getHeight());
+            ctx.stroke();
+        });
+
+        horizontalLines.forEach(function(line) {
+            ctx.beginPath();
+            ctx.moveTo(0, line.y + 0.5);
+            ctx.lineTo(canvas.getWidth(), line.y + 0.5);
+            ctx.stroke();
+        });
+    }
+
+    // ========================================
+    // PHASE 6: ALIGNMENT TOOLS
+    // ========================================
+
+    function alignLeft() {
+        if (!canvas || selectedObjects.length < 2) return;
+
+        var minLeft = Math.min.apply(Math, selectedObjects.map(function(obj) {
+            return obj.getBoundingRect().left;
+        }));
+
+        selectedObjects.forEach(function(obj) {
+            var bounds = obj.getBoundingRect();
+            var offset = minLeft - bounds.left;
+            obj.set({ left: obj.left + offset });
+            obj.setCoords();
+        });
+
+        canvas.renderAll();
+        console.log('Aligned left');
+    }
+
+    function alignCenter() {
+        if (!canvas || selectedObjects.length < 2) return;
+
+        var centerX = canvas.getWidth() / 2;
+
+        selectedObjects.forEach(function(obj) {
+            var bounds = obj.getBoundingRect();
+            var objCenterX = bounds.left + bounds.width / 2;
+            var offset = centerX - objCenterX;
+            obj.set({ left: obj.left + offset });
+            obj.setCoords();
+        });
+
+        canvas.renderAll();
+        console.log('Aligned center');
+    }
+
+    function alignRight() {
+        if (!canvas || selectedObjects.length < 2) return;
+
+        var maxRight = Math.max.apply(Math, selectedObjects.map(function(obj) {
+            var bounds = obj.getBoundingRect();
+            return bounds.left + bounds.width;
+        }));
+
+        selectedObjects.forEach(function(obj) {
+            var bounds = obj.getBoundingRect();
+            var objRight = bounds.left + bounds.width;
+            var offset = maxRight - objRight;
+            obj.set({ left: obj.left + offset });
+            obj.setCoords();
+        });
+
+        canvas.renderAll();
+        console.log('Aligned right');
+    }
+
+    function alignTop() {
+        if (!canvas || selectedObjects.length < 2) return;
+
+        var minTop = Math.min.apply(Math, selectedObjects.map(function(obj) {
+            return obj.getBoundingRect().top;
+        }));
+
+        selectedObjects.forEach(function(obj) {
+            var bounds = obj.getBoundingRect();
+            var offset = minTop - bounds.top;
+            obj.set({ top: obj.top + offset });
+            obj.setCoords();
+        });
+
+        canvas.renderAll();
+        console.log('Aligned top');
+    }
+
+    function alignMiddle() {
+        if (!canvas || selectedObjects.length < 2) return;
+
+        var centerY = canvas.getHeight() / 2;
+
+        selectedObjects.forEach(function(obj) {
+            var bounds = obj.getBoundingRect();
+            var objCenterY = bounds.top + bounds.height / 2;
+            var offset = centerY - objCenterY;
+            obj.set({ top: obj.top + offset });
+            obj.setCoords();
+        });
+
+        canvas.renderAll();
+        console.log('Aligned middle');
+    }
+
+    function alignBottom() {
+        if (!canvas || selectedObjects.length < 2) return;
+
+        var maxBottom = Math.max.apply(Math, selectedObjects.map(function(obj) {
+            var bounds = obj.getBoundingRect();
+            return bounds.top + bounds.height;
+        }));
+
+        selectedObjects.forEach(function(obj) {
+            var bounds = obj.getBoundingRect();
+            var objBottom = bounds.top + bounds.height;
+            var offset = maxBottom - objBottom;
+            obj.set({ top: obj.top + offset });
+            obj.setCoords();
+        });
+
+        canvas.renderAll();
+        console.log('Aligned bottom');
+    }
+
+    // ========================================
+    // PHASE 6: DISTRIBUTION TOOLS
+    // ========================================
+
+    function distributeHorizontally() {
+        if (!canvas || selectedObjects.length < 3) {
+            alert('Select at least 3 objects to distribute');
+            return;
+        }
+
+        var sorted = selectedObjects.slice().sort(function(a, b) {
+            return a.getBoundingRect().left - b.getBoundingRect().left;
+        });
+
+        var first = sorted[0].getBoundingRect();
+        var last = sorted[sorted.length - 1].getBoundingRect();
+
+        var totalWidth = sorted.reduce(function(sum, obj) {
+            return sum + obj.getBoundingRect().width;
+        }, 0);
+
+        var spacing = (last.left - first.left - totalWidth + last.width) / (sorted.length - 1);
+
+        var currentX = first.left + first.width;
+
+        for (var i = 1; i < sorted.length - 1; i++) {
+            var obj = sorted[i];
+            var bounds = obj.getBoundingRect();
+            currentX += spacing;
+            var offset = currentX - bounds.left;
+            obj.set({ left: obj.left + offset });
+            obj.setCoords();
+            currentX += bounds.width;
+        }
+
+        canvas.renderAll();
+        console.log('Distributed horizontally');
+    }
+
+    function distributeVertically() {
+        if (!canvas || selectedObjects.length < 3) {
+            alert('Select at least 3 objects to distribute');
+            return;
+        }
+
+        var sorted = selectedObjects.slice().sort(function(a, b) {
+            return a.getBoundingRect().top - b.getBoundingRect().top;
+        });
+
+        var first = sorted[0].getBoundingRect();
+        var last = sorted[sorted.length - 1].getBoundingRect();
+
+        var totalHeight = sorted.reduce(function(sum, obj) {
+            return sum + obj.getBoundingRect().height;
+        }, 0);
+
+        var spacing = (last.top - first.top - totalHeight + last.height) / (sorted.length - 1);
+
+        var currentY = first.top + first.height;
+
+        for (var i = 1; i < sorted.length - 1; i++) {
+            var obj = sorted[i];
+            var bounds = obj.getBoundingRect();
+            currentY += spacing;
+            var offset = currentY - bounds.top;
+            obj.set({ top: obj.top + offset });
+            obj.setCoords();
+            currentY += bounds.height;
+        }
+
+        canvas.renderAll();
+        console.log('Distributed vertically');
+    }
+
+    // ========================================
+    // PHASE 6: LAYER EXPORT
+    // ========================================
+
+    function exportSelectedLayer() {
+        if (!canvas) return;
+
+        var activeObject = canvas.getActiveObject();
+        if (!activeObject) {
+            alert('Please select a layer to export');
+            return;
+        }
+
+        var layerName = activeObject.layerName || 'layer';
+        exportSingleObject(activeObject, layerName);
+    }
+
+    function exportSingleObject(obj, filename) {
+        if (!canvas || !obj) return;
+
+        // Create a temporary canvas
+        var tempCanvas = new fabric.Canvas(document.createElement('canvas'));
+        var bounds = obj.getBoundingRect(true);
+
+        tempCanvas.setWidth(bounds.width);
+        tempCanvas.setHeight(bounds.height);
+        tempCanvas.backgroundColor = 'transparent';
+
+        // Clone the object
+        obj.clone(function(cloned) {
+            cloned.set({
+                left: bounds.width / 2,
+                top: bounds.height / 2,
+                originX: 'center',
+                originY: 'center'
+            });
+
+            tempCanvas.add(cloned);
+            tempCanvas.renderAll();
+
+            // Export as PNG
+            var dataURL = tempCanvas.toDataURL({
+                format: 'png',
+                quality: 1
+            });
+
+            // Download
+            var link = document.createElement('a');
+            link.download = filename.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '.png';
+            link.href = dataURL;
+            link.click();
+
+            tempCanvas.dispose();
+            console.log('Exported layer:', filename);
+        });
+    }
+
+    function exportAllLayers() {
+        if (!canvas) return;
+
+        var objects = canvas.getObjects();
+        if (objects.length === 0) {
+            alert('No layers to export');
+            return;
+        }
+
+        var confirmExport = confirm('Export all ' + objects.length + ' layers as separate PNG files?');
+        if (!confirmExport) return;
+
+        objects.forEach(function(obj, index) {
+            var layerName = obj.layerName || 'layer-' + (index + 1);
+            setTimeout(function() {
+                exportSingleObject(obj, layerName);
+            }, index * 200); // Stagger downloads
+        });
+
+        console.log('Exporting all layers:', objects.length);
+    }
+
+    // ========================================
+    // PHASE 6: EVENT HANDLERS
+    // ========================================
+
+    // Snapping toggle
+    $('#iobp-snapping-enabled').on('change', function() {
+        snappingEnabled = $(this).is(':checked');
+        console.log('Snapping', snappingEnabled ? 'enabled' : 'disabled');
+    });
+
+    // Alignment buttons
+    $('#iobp-align-left').on('click', alignLeft);
+    $('#iobp-align-center').on('click', alignCenter);
+    $('#iobp-align-right').on('click', alignRight);
+    $('#iobp-align-top').on('click', alignTop);
+    $('#iobp-align-middle').on('click', alignMiddle);
+    $('#iobp-align-bottom').on('click', alignBottom);
+
+    // Distribution buttons
+    $('#iobp-distribute-horizontal').on('click', distributeHorizontally);
+    $('#iobp-distribute-vertical').on('click', distributeVertically);
+
+    // Export buttons
+    $('#iobp-export-selected').on('click', exportSelectedLayer);
+    $('#iobp-export-all-layers').on('click', exportAllLayers);
+
+    // Add tooltips to all buttons
+    $('button[title], .iobp-tooltip[title]').each(function() {
+        $(this).attr('data-tooltip', $(this).attr('title'));
+    });
+
     refreshLayerPanel();
 
     // ========================================
@@ -2140,6 +2583,6 @@ jQuery(document).ready(function($) {
         }
     });
 
-    console.log('Overlay Edit JS fully loaded (Phase 5 - v1.6.0 - Dark Theme)!');
-    console.log('New features: Nested groups, Boolean operations, Keyboard shortcuts, Context menu, Dark Palleon-style UI');
+    console.log('Overlay Edit JS fully loaded (Phase 6 - v2.0.0 - Dark Theme + All Features)!');
+    console.log('Features: Dark Palleon-style UI, Nested groups, Boolean operations, Keyboard shortcuts, Context menu, Layer Export, Alignment Tools, Distribution, Magnetic Guides');
 });
