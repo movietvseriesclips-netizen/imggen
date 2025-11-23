@@ -992,10 +992,10 @@ jQuery(document).ready(function($) {
 
     function bindShapeToolHandlers() {
         console.log('Binding shape tool handlers (Phase 5)...');
-        
-        $('.iobp-shape-tool-btn').off('click');
-        
-        $('.iobp-shape-tool-btn').on('click', function() {
+
+        $('.iobp-shape-btn').off('click');
+
+        $('.iobp-shape-btn').on('click', function() {
             console.log('Shape button clicked!');
             
             if (!canvas) {
@@ -1074,7 +1074,7 @@ jQuery(document).ready(function($) {
             }
         });
         
-        console.log('Shape tool handlers bound. Button count:', $('.iobp-shape-tool-btn').length);
+        console.log('Shape tool handlers bound. Button count:', $('.iobp-shape-btn').length);
     }
 
     $('#iobp-apply-shape-style').on('click', function() {
@@ -2557,6 +2557,32 @@ jQuery(document).ready(function($) {
 
     refreshLayerPanel();
 
-    console.log('Overlay Edit JS fully loaded (Phase 6 - v1.7.0)!');
-    console.log('New features: Layer Export, Alignment Tools, Distribution, Magnetic Guides, UI Polish');
+    // ========================================
+    // MOBILE MENU TOGGLE & OVERLAY
+    // ========================================
+
+    $('#iobp-menu-toggle').on('click', function() {
+        $('#iobp-sidebar').toggleClass('active');
+        $('#iobp-sidebar-overlay').toggleClass('active');
+    });
+
+    $('#iobp-sidebar-overlay').on('click', function() {
+        $('#iobp-sidebar').removeClass('active');
+        $('#iobp-sidebar-overlay').removeClass('active');
+    });
+
+    // Close sidebar when clicking on a section (mobile)
+    $(document).on('click', '.iobp-section-header', function() {
+        if (window.innerWidth <= 768) {
+            // Optionally close the sidebar after selecting a section on mobile
+            // Uncomment the lines below if you want this behavior
+            // setTimeout(function() {
+            //     $('#iobp-sidebar').removeClass('active');
+            //     $('#iobp-sidebar-overlay').removeClass('active');
+            // }, 300);
+        }
+    });
+
+    console.log('Overlay Edit JS fully loaded (Phase 6 - v2.0.0 - Dark Theme + All Features)!');
+    console.log('Features: Dark Palleon-style UI, Nested groups, Boolean operations, Keyboard shortcuts, Context menu, Layer Export, Alignment Tools, Distribution, Magnetic Guides');
 });
