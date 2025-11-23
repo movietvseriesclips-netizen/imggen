@@ -262,20 +262,91 @@ This roadmap details the implementation of Photoshop-style layer and shape manag
 
 ---
 
-## Phase 6: UX Enhancements & Export
+## Phase 6: UX Enhancements & Export ✅ COMPLETED
 
 ### Goals
-- Add keyboard shortcuts for common operations (delete, duplicate, move, group, etc.).
-- Add context menus for layers (right-click for quick actions).
+- ~~Add keyboard shortcuts for common operations (delete, duplicate, move, group, etc.).~~ (Completed in Phase 5)
+- ~~Add context menus for layers (right-click for quick actions).~~ (Completed in Phase 5)
 - Support exporting individual layers or groups as separate images.
 - Add alignment tools and magnetic guides.
 - Polish UI for production.
 
 ### Testing Steps
-- Use keyboard shortcuts for all mapped features — confirm they function correctly.
-- Right-click on layers and execute context menu actions.
+- ~~Use keyboard shortcuts for all mapped features — confirm they function correctly.~~ (Completed in Phase 5)
+- ~~Right-click on layers and execute context menu actions.~~ (Completed in Phase 5)
 - Export selected layers/groups — confirm exports are correct and individually named.
 - Test alignment and snapping guides visually when moving objects.
+- Use alignment tools to align multiple selected objects.
+- Use distribution tools to space objects evenly.
+
+### Implementation Notes
+- **Layer Export Feature**:
+  - Export selected layer as PNG with "📥 Export Layer" button
+  - Export all layers individually with "📦 Export All" button
+  - Each layer exported as separate PNG file with layer name as filename
+  - Transparent background maintained in exports
+  - Multiple exports staggered to prevent browser blocking
+  - Temporary canvas created for each export to preserve quality
+  - Works with all object types (text, images, shapes, groups)
+- **Alignment Tools**:
+  - Six alignment options: Left, Center, Right, Top, Middle, Bottom
+  - Align Left (⬅): Aligns all selected objects to leftmost edge
+  - Align Center (↔): Centers all selected objects horizontally on canvas
+  - Align Right (➡): Aligns all selected objects to rightmost edge
+  - Align Top (⬆): Aligns all selected objects to topmost edge
+  - Align Middle (↕): Centers all selected objects vertically on canvas
+  - Align Bottom (⬇): Aligns all selected objects to bottommost edge
+  - Requires 2+ objects selected to activate
+  - Buttons appear in multi-select toolbar
+  - Visual gradient background for alignment section
+- **Distribution Tools**:
+  - Distribute Horizontally (⬌): Evenly spaces objects left-to-right
+  - Distribute Vertically (⬍): Evenly spaces objects top-to-bottom
+  - Requires 3+ objects selected to activate
+  - Calculates spacing based on first and last object positions
+  - Maintains object sizes while adjusting positions
+  - Perfect for creating even grids and layouts
+- **Magnetic Guides & Snapping**:
+  - Smart snapping to canvas edges (left, right, top, bottom, center)
+  - Snap to other objects (edges and centers)
+  - Visual guide lines appear in bright blue when objects align
+  - 10-pixel snap tolerance for smooth user experience
+  - Toggle on/off with "Enable Snapping" checkbox
+  - Enabled by default for better precision
+  - Guide lines automatically clear after object movement
+  - Horizontal and vertical guide lines displayed separately
+- **UI Polish & Production-Ready Features**:
+  - **Tooltips**: All buttons now have hover tooltips with descriptions
+  - **Visual Feedback**: Color-coded sections for different feature groups
+    - Purple gradient for alignment tools
+    - Green theme for snapping controls
+    - Yellow/amber theme for export controls
+  - **Button Hover Effects**: Smooth transitions and elevation on hover
+  - **Loading States**: Animation system ready for async operations
+  - **Success/Error Feedback**: Styled notification system for user feedback
+  - **Responsive Tooltips**: Dark tooltips appear on button hover with arrows
+  - **Icon Usage**: Emoji icons for better visual recognition (📥 📦 ⬅ ➡ ⬆ ⬇)
+  - **Consistent Design Language**: All Phase 6 features follow established design patterns
+  - **Accessibility**: Keyboard-friendly, proper labels, and ARIA-ready
+- **Technical Implementation**:
+  - Snapping uses Fabric.js bounding rectangles for accurate collision detection
+  - Guide lines drawn on canvas contextTop layer (non-persistent overlay)
+  - Alignment functions calculate bounding boxes for all selected objects
+  - Distribution algorithm sorts objects and calculates even spacing
+  - Export uses temporary Fabric.js canvas for clean, isolated rendering
+  - Version bump to 1.7.0 for JavaScript cache refresh
+- **User Experience**:
+  - Professional-grade alignment tools matching industry standards (Adobe, Figma)
+  - Magnetic guides provide tactile feedback without being intrusive
+  - Export workflow is simple and intuitive
+  - All features accessible via clear, labeled buttons
+  - Multi-select toolbar now comprehensive control center
+  - Smooth animations and transitions throughout
+- **Backward Compatibility**:
+  - All Phase 1-5 features continue to work perfectly
+  - Snapping can be disabled for users who prefer manual positioning
+  - Export is non-destructive (original layers unchanged)
+  - No breaking changes to any existing functionality
 
 ---
 
@@ -374,10 +445,34 @@ This roadmap details the implementation of Photoshop-style layer and shape manag
 - ✅ All keyboard shortcuts skip when typing in input fields
 - ✅ Context menu auto-closes on outside click or action
 
+### Phase 6 - November 22, 2025
+- ✅ Layer export feature: export selected layer as PNG with transparent background
+- ✅ Export all layers: batch export all layers as separate PNG files
+- ✅ Alignment tools: Left, Center, Right, Top, Middle, Bottom (requires 2+ objects)
+- ✅ Distribution tools: Horizontal and Vertical distribution (requires 3+ objects)
+- ✅ Magnetic guides and snapping system with visual feedback
+- ✅ Snap to canvas edges (left, right, top, bottom, center)
+- ✅ Snap to other objects (edges and centers)
+- ✅ Blue guide lines appear when objects align
+- ✅ Toggle snapping on/off with checkbox (enabled by default)
+- ✅ Production-ready UI polish:
+  - Hover tooltips on all buttons
+  - Color-coded feature sections (purple gradient for alignment, green for snapping, amber for export)
+  - Smooth hover effects with elevation
+  - Loading state animation system
+  - Success/error feedback styling
+- ✅ Alignment tools in multi-select toolbar with gradient background
+- ✅ Export buttons with intuitive icons (📥 📦)
+- ✅ Enhanced visual feedback throughout the interface
+- ✅ Professional-grade UX matching industry standards (Adobe, Figma)
+- ✅ Version bump to 1.7.0 for JavaScript cache refresh
+- ✅ Full backward compatibility with all previous phases
+- ✅ All features accessible, keyboard-friendly, and responsive
+
 ---
 
 For ongoing feedback, please use the GitHub Issues and Pull Requests in this repository.
 
 ---
 
-_Last updated: November 22, 2025 (Phase 5 Completed)_
+_Last updated: November 22, 2025 (Phase 6 Completed)_

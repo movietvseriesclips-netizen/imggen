@@ -4,7 +4,7 @@ A WordPress plugin for applying custom overlays—including text, shapes, logos,
 
 ## Plugin Information
 
-- **Version:** 1.6.0
+- **Version:** 1.7.0
 - **Requires WordPress:** 5.0 or higher
 - **Tested up to:** 6.x
 - **License:** GPL v2 or later
@@ -35,6 +35,10 @@ A WordPress plugin for applying custom overlays—including text, shapes, logos,
 - **Boolean operations**: Union, Subtract, Intersect, Exclude for combining shapes
 - **Keyboard shortcuts**: Group (Ctrl+G), Ungroup (Ctrl+Shift+G), Duplicate (Ctrl+D), Delete, Arrow keys for movement
 - **Context menu**: Right-click on layers for quick actions
+- **Alignment tools**: Align Left, Center, Right, Top, Middle, Bottom (requires 2+ objects)
+- **Distribution tools**: Distribute Horizontally and Vertically for even spacing (requires 3+ objects)
+- **Magnetic guides**: Smart snapping to canvas edges and other objects with visual blue guide lines
+- **Layer export**: Export selected layer or all layers as separate PNG files
 
 ### Font Management
 - Upload and manage custom fonts (TTF, OTF, WOFF, WOFF2)
@@ -52,7 +56,47 @@ A WordPress plugin for applying custom overlays—including text, shapes, logos,
 - Photoshop-style toolbar and panel design
 - Multi-select toolbar and batch controls
 - Right-click context menus for quick actions
+- Production-ready UI with color-coded sections, hover tooltips, and smooth animations
 - Responsive on all devices
+
+---
+
+## NEW IN v1.7.0 (Phase 6)
+
+### Layer Export
+- **Export Selected Layer**: Export any selected layer as a PNG with transparent background
+- **Export All Layers**: Batch export all layers as separate PNG files with auto-generated filenames
+- Works with all object types (text, images, shapes, groups)
+- Maintains transparency and layer properties in exports
+
+### Alignment & Distribution Tools
+- **Six Alignment Options**: Left, Center, Right, Top, Middle, Bottom
+  - Align multiple selected objects to specific edges or centers
+  - Requires 2 or more objects selected
+  - Accessible via multi-select toolbar
+- **Distribution Tools**: Horizontal and Vertical
+  - Evenly space 3 or more selected objects
+  - Perfect for creating grids and organized layouts
+  - Maintains object sizes while adjusting positions
+
+### Magnetic Guides & Snapping
+- **Smart Snapping System**: Objects automatically snap to:
+  - Canvas edges (left, right, top, bottom, horizontal center, vertical center)
+  - Other object edges and centers
+  - 10-pixel snap tolerance for smooth alignment
+- **Visual Guide Lines**: Bright blue lines appear when objects align
+- **Toggle Control**: Enable/disable snapping with checkbox (on by default)
+- **Non-Intrusive**: Guide lines appear only during movement and clear automatically
+
+### UI/UX Polish & Production-Ready Features
+- **Hover Tooltips**: All buttons display helpful descriptions on hover
+- **Color-Coded Sections**:
+  - Purple gradient background for alignment tools
+  - Green theme for snapping controls
+  - Amber/yellow theme for export features
+- **Enhanced Visual Feedback**: Smooth transitions, hover effects, and elevation
+- **Professional Design**: Matches industry standards (Adobe Photoshop, Figma)
+- **Accessibility**: Keyboard-friendly, proper labels, responsive design
 
 ---
 
@@ -138,6 +182,21 @@ See the full [Development Roadmap](DEVELOPMENT-ROADMAP.md) for feature phases an
 ---
 
 ## Changelog
+
+### Version 1.7.0 - November 22, 2025
+- **Phase 6 completed: Layer Export, Alignment Tools, Distribution, Magnetic Guides, UI Polish**
+- Layer export feature: export selected layer or all layers as separate PNG files
+- Alignment tools: Left, Center, Right, Top, Middle, Bottom (requires 2+ objects)
+- Distribution tools: Horizontal and Vertical spacing (requires 3+ objects)
+- Magnetic guides and snapping system with visual blue guide lines
+- Snap to canvas edges and other object edges/centers
+- Toggle snapping on/off with checkbox (enabled by default)
+- Production-ready UI polish with color-coded sections
+- Hover tooltips on all buttons with helpful descriptions
+- Enhanced visual feedback: smooth transitions, hover effects, elevation
+- Professional-grade UX matching industry standards
+- Version bump to 1.7.0 for JavaScript cache refresh
+- Full backward compatibility with all previous versions
 
 ### Version 1.6.0 - November 22, 2025
 - **Phase 5 completed: Nested groups, Boolean operations, Keyboard shortcuts, Context menu**
