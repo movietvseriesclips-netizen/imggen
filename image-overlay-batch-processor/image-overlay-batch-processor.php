@@ -150,9 +150,16 @@ class Image_Overlay_Batch_Processor {
                 true
             );
             wp_enqueue_script(
+                'iobp-overlay-ui',
+                IOBP_PLUGIN_URL . 'assets/js/overlay-ui.js',
+                array('jquery'),
+                IOBP_VERSION,
+                true
+            );
+            wp_enqueue_script(
                 'iobp-overlay-edit',
                 IOBP_PLUGIN_URL . 'assets/js/overlay-edit.js',
-                array('jquery', 'fabric-js'),
+                array('jquery', 'fabric-js', 'iobp-overlay-ui'),
                 IOBP_VERSION,
                 true
             );

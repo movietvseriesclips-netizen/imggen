@@ -960,10 +960,10 @@ jQuery(document).ready(function($) {
 
     function bindShapeToolHandlers() {
         console.log('Binding shape tool handlers (Phase 5)...');
-        
-        $('.iobp-shape-tool-btn').off('click');
-        
-        $('.iobp-shape-tool-btn').on('click', function() {
+
+        $('.iobp-shape-btn').off('click');
+
+        $('.iobp-shape-btn').on('click', function() {
             console.log('Shape button clicked!');
             
             if (!canvas) {
@@ -1042,7 +1042,7 @@ jQuery(document).ready(function($) {
             }
         });
         
-        console.log('Shape tool handlers bound. Button count:', $('.iobp-shape-tool-btn').length);
+        console.log('Shape tool handlers bound. Button count:', $('.iobp-shape-btn').length);
     }
 
     $('#iobp-apply-shape-style').on('click', function() {
