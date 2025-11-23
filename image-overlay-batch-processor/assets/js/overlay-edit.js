@@ -2113,7 +2113,33 @@ jQuery(document).ready(function($) {
     }
 
     refreshLayerPanel();
-    
-    console.log('Overlay Edit JS fully loaded (Phase 5 - v1.6.0)!');
-    console.log('New features: Nested groups, Boolean operations, Keyboard shortcuts, Context menu');
+
+    // ========================================
+    // MOBILE MENU TOGGLE & OVERLAY
+    // ========================================
+
+    $('#iobp-menu-toggle').on('click', function() {
+        $('#iobp-sidebar').toggleClass('active');
+        $('#iobp-sidebar-overlay').toggleClass('active');
+    });
+
+    $('#iobp-sidebar-overlay').on('click', function() {
+        $('#iobp-sidebar').removeClass('active');
+        $('#iobp-sidebar-overlay').removeClass('active');
+    });
+
+    // Close sidebar when clicking on a section (mobile)
+    $(document).on('click', '.iobp-section-header', function() {
+        if (window.innerWidth <= 768) {
+            // Optionally close the sidebar after selecting a section on mobile
+            // Uncomment the lines below if you want this behavior
+            // setTimeout(function() {
+            //     $('#iobp-sidebar').removeClass('active');
+            //     $('#iobp-sidebar-overlay').removeClass('active');
+            // }, 300);
+        }
+    });
+
+    console.log('Overlay Edit JS fully loaded (Phase 5 - v1.6.0 - Dark Theme)!');
+    console.log('New features: Nested groups, Boolean operations, Keyboard shortcuts, Context menu, Dark Palleon-style UI');
 });

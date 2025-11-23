@@ -2,10 +2,10 @@
     <!-- Top Header Bar -->
     <div class="iobp-editor-header">
         <button id="iobp-menu-toggle" class="iobp-menu-toggle" aria-label="Toggle Menu">☰</button>
-        <h1 class="iobp-editor-title">Editor</h1>
+        <h1 class="iobp-editor-title">ImgGen Editor</h1>
         <div class="iobp-header-actions">
             <input type="text" id="iobp-overlay-filename" placeholder="my-overlay.png" class="iobp-filename-input" />
-            <button id="iobp-save-overlay" class="iobp-btn iobp-btn-primary">Save to Library</button>
+            <button id="iobp-save-overlay" class="iobp-btn iobp-btn-primary">💾 SAVE</button>
         </div>
     </div>
 
@@ -272,11 +272,14 @@
         <!-- Right Sidebar - Layers -->
         <aside class="iobp-layers-sidebar">
             <div class="iobp-layers-header">
-                <h3>Layers</h3>
+                <h3>🎨 Layers</h3>
             </div>
             <div id="iobp-layer-list" class="iobp-layer-list">
                 <div class="iobp-layer-empty">No layers yet. Add text, images, or shapes to get started.</div>
             </div>
         </aside>
     </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="iobp-sidebar-overlay" id="iobp-sidebar-overlay"></div>
 </div>
