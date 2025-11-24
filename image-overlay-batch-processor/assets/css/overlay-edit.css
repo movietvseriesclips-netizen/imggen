@@ -1524,16 +1524,16 @@ button[title]:hover::before {
 .iobp-tool-palette {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 12px;
 }
 
 .iobp-tool-btn {
     background: #252525;
-    border: 2px solid #3a3a3a;
-    padding: 12px;
+    border: 1px solid #3a3a3a;
+    padding: 6px;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 6px;
     transition: all 0.2s;
     display: flex;
     align-items: center;
@@ -1546,20 +1546,20 @@ button[title]:hover::before {
     background: #2a2a2a;
     border-color: #5b7cff;
     color: #5b7cff;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(91, 124, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(91, 124, 255, 0.2);
 }
 
 .iobp-tool-btn.active {
     background: linear-gradient(135deg, #5b7cff, #3a7bd5);
     border-color: #5b7cff;
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(91, 124, 255, 0.4);
+    box-shadow: 0 2px 8px rgba(91, 124, 255, 0.3);
 }
 
 .iobp-tool-btn svg {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
 }
 
 /* Color Swatches */
