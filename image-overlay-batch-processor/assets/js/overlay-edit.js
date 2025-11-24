@@ -3051,6 +3051,153 @@ jQuery(document).ready(function($) {
         selectionMode: 'new' // 'new', 'add', 'subtract', 'intersect'
     };
 
+    // Phase 8.2: Zoom Tool Variables and Functions
+    var currentZoom = 1;
+    var zoomContextMenu = null;
+
+    // Phase 8.3: Undo/Redo System
+    var canvasHistory = [];
+    var historyStep = -1;
+    var isRestoring = false;
+
+    // Save canvas state to history
+    function saveCanvasState() {
+        if (isRestoring) return;
+
+        // Remove any states after current step (when user made changes after undo)
+        if (historyStep < canvasHistory.length - 1) {
+            canvasHistory = canvasHistory.slice(0, historyStep + 1);
+        }
+
+        // Save current canvas state
+        var json = JSON.stringify(canvas.toJSON(['layerId', 'layerLocked', 'excludeFromExport']));
+        canvasHistory.push(json);
+        historyStep++;
+
+        // Limit history to 50 states to prevent memory issues
+        if (canvasHistory.length > 50) {
+            canvasHistory.shift();
+            historyStep--;
+        }
+
+        updateUndoRedoButtons();
+        console.log('Canvas state saved. History step:', historyStep, 'Total states:', canvasHistory.length);
+    }
+
+    // Undo action
+    function undo() {
+        if (historyStep > 0) {
+            isRestoring = true;
+            historyStep--;
+            var state = canvasHistory[historyStep];
+
+            canvas.loadFromJSON(state, function() {
+                canvas.renderAll();
+                isRestoring = false;
+                updateUndoRedoButtons();
+                console.log('Undo to step:', historyStep);
+            });
+        }
+    }
+
+    // Redo action
+    function redo() {
+        if (historyStep < canvasHistory.length - 1) {
+            isRestoring = true;
+            historyStep++;
+            var state = canvasHistory[historyStep];
+
+            canvas.loadFromJSON(state, function() {
+                canvas.renderAll();
+                isRestoring = false;
+                updateUndoRedoButtons();
+                console.log('Redo to step:', historyStep);
+            });
+        }
+    }
+
+    // Update undo/redo button states
+    function updateUndoRedoButtons() {
+        var undoBtn = $('#iobp-undo-btn');
+        var redoBtn = $('#iobp-redo-btn');
+
+        if (historyStep > 0) {
+            undoBtn.prop('disabled', false).removeClass('disabled');
+        } else {
+            undoBtn.prop('disabled', true).addClass('disabled');
+        }
+
+        if (historyStep < canvasHistory.length - 1) {
+            redoBtn.prop('disabled', false).removeClass('disabled');
+        } else {
+            redoBtn.prop('disabled', true).addClass('disabled');
+        }
+    }
+
+    // Zoom In
+    function zoomIn() {
+        var newZoom = Math.min(currentZoom * 1.25, 10); // Max 10x zoom
+        canvas.setZoom(newZoom);
+        currentZoom = newZoom;
+        canvas.renderAll();
+        console.log('Zoomed in to:', (currentZoom * 100).toFixed(0) + '%');
+    }
+
+    // Zoom Out
+    function zoomOut() {
+        var newZoom = Math.max(currentZoom / 1.25, 0.1); // Min 0.1x zoom
+        canvas.setZoom(newZoom);
+        currentZoom = newZoom;
+        canvas.renderAll();
+        console.log('Zoomed out to:', (currentZoom * 100).toFixed(0) + '%');
+    }
+
+    // Fit on Screen
+    function fitOnScreen() {
+        var canvasContainer = $('.iobp-canvas-container');
+        var containerWidth = canvasContainer.width();
+        var containerHeight = canvasContainer.height();
+        var canvasWidth = canvas.getWidth();
+        var canvasHeight = canvas.getHeight();
+
+        var scaleX = (containerWidth - 40) / canvasWidth;
+        var scaleY = (containerHeight - 40) / canvasHeight;
+        var newZoom = Math.min(scaleX, scaleY, 1); // Don't zoom in beyond 100%
+
+        canvas.setZoom(newZoom);
+        currentZoom = newZoom;
+        canvas.renderAll();
+        console.log('Fit on screen:', (currentZoom * 100).toFixed(0) + '%');
+    }
+
+    // Actual Pixels (100% zoom)
+    function actualPixels() {
+        canvas.setZoom(1);
+        currentZoom = 1;
+        canvas.renderAll();
+        console.log('Actual pixels: 100%');
+    }
+
+    // Show zoom context menu
+    function showZoomContextMenu(x, y) {
+        if (!zoomContextMenu) {
+            zoomContextMenu = $('#iobp-zoom-context-menu');
+        }
+        zoomContextMenu.css({
+            left: x + 'px',
+            top: y + 'px',
+            display: 'block'
+        });
+    }
+
+    // Hide zoom context menu
+    function hideZoomContextMenu() {
+        if (!zoomContextMenu) {
+            zoomContextMenu = $('#iobp-zoom-context-menu');
+        }
+        zoomContextMenu.hide();
+    }
+
     // Phase 8: Tool Switching
     function switchTool(toolName) {
         console.log('Switching to tool:', toolName);
@@ -3987,70 +4134,7 @@ jQuery(document).ready(function($) {
         } : { r: 0, g: 0, b: 0 };
     }
 
-    // ===================================================================
-    // Phase 8.2: Zoom Tool - Photoshop-like Zoom Functionality
-    // ===================================================================
-
-    var currentZoom = 1;
-    var zoomContextMenu = $('#iobp-zoom-context-menu');
-
-    // Zoom In
-    function zoomIn() {
-        var newZoom = Math.min(currentZoom * 1.25, 10); // Max 10x zoom
-        canvas.setZoom(newZoom);
-        currentZoom = newZoom;
-        canvas.renderAll();
-        console.log('Zoomed in to:', (currentZoom * 100).toFixed(0) + '%');
-    }
-
-    // Zoom Out
-    function zoomOut() {
-        var newZoom = Math.max(currentZoom / 1.25, 0.1); // Min 0.1x zoom
-        canvas.setZoom(newZoom);
-        currentZoom = newZoom;
-        canvas.renderAll();
-        console.log('Zoomed out to:', (currentZoom * 100).toFixed(0) + '%');
-    }
-
-    // Fit on Screen
-    function fitOnScreen() {
-        var canvasContainer = $('.iobp-canvas-container');
-        var containerWidth = canvasContainer.width();
-        var containerHeight = canvasContainer.height();
-        var canvasWidth = canvas.getWidth();
-        var canvasHeight = canvas.getHeight();
-
-        var scaleX = (containerWidth - 40) / canvasWidth;
-        var scaleY = (containerHeight - 40) / canvasHeight;
-        var newZoom = Math.min(scaleX, scaleY, 1); // Don't zoom in beyond 100%
-
-        canvas.setZoom(newZoom);
-        currentZoom = newZoom;
-        canvas.renderAll();
-        console.log('Fit on screen:', (currentZoom * 100).toFixed(0) + '%');
-    }
-
-    // Actual Pixels (100% zoom)
-    function actualPixels() {
-        canvas.setZoom(1);
-        currentZoom = 1;
-        canvas.renderAll();
-        console.log('Actual pixels: 100%');
-    }
-
-    // Show zoom context menu
-    function showZoomContextMenu(x, y) {
-        zoomContextMenu.css({
-            left: x + 'px',
-            top: y + 'px',
-            display: 'block'
-        });
-    }
-
-    // Hide zoom context menu
-    function hideZoomContextMenu() {
-        zoomContextMenu.hide();
-    }
+    // Phase 8.2: Zoom Tool Event Handlers
 
     // Prevent default context menu on canvas
     $('#iobp-overlay-canvas').on('contextmenu', function(e) {
@@ -4089,7 +4173,61 @@ jQuery(document).ready(function($) {
         }
     });
 
+    // Phase 8.3: Undo/Redo Event Handlers
+
+    // Undo/Redo button clicks
+    $('#iobp-undo-btn').on('click', function() {
+        if (!$(this).hasClass('disabled')) {
+            undo();
+        }
+    });
+
+    $('#iobp-redo-btn').on('click', function() {
+        if (!$(this).hasClass('disabled')) {
+            redo();
+        }
+    });
+
+    // Keyboard shortcuts for Undo/Redo
+    $(document).on('keydown', function(e) {
+        // Ctrl+Z or Cmd+Z for Undo
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+            e.preventDefault();
+            undo();
+        }
+        // Ctrl+Y or Cmd+Y or Ctrl+Shift+Z for Redo
+        else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+            e.preventDefault();
+            redo();
+        }
+    });
+
+    // Save canvas state on object modifications
+    canvas.on('object:added', function(e) {
+        if (!isRestoring) {
+            setTimeout(saveCanvasState, 100);
+        }
+    });
+
+    canvas.on('object:modified', function(e) {
+        if (!isRestoring) {
+            setTimeout(saveCanvasState, 100);
+        }
+    });
+
+    canvas.on('object:removed', function(e) {
+        if (!isRestoring) {
+            setTimeout(saveCanvasState, 100);
+        }
+    });
+
+    // Save initial canvas state
+    setTimeout(function() {
+        saveCanvasState();
+        console.log('Initial canvas state saved');
+    }, 500);
+
     console.log('Phase 8 tools initialized successfully!');
-    console.log('Overlay Edit JS fully loaded (Phase 8 - v1.8.2 - Zoom Tool & Enhanced Magic Wand)!');
-    console.log('Features: Dark Palleon-style UI, Nested groups, Boolean operations, Keyboard shortcuts, Context menu, Layer Export, Alignment Tools, Distribution, Magnetic Guides, Custom Canvas Sizes, Clipboard Detection, Brush Tool, Eraser Tool, Paint Bucket, Magic Wand (Pixel-Perfect Selection, Add/Subtract/Intersect, Anti-alias, Sample All Layers), Zoom Tool (Zoom In/Out, Fit Screen, Actual Pixels), Raster Layers');
+    console.log('Overlay Edit JS fully loaded (v2.1.3 - Undo/Redo, Zoom Tool & Enhanced Magic Wand)!');
+    console.log('Features: Dark Palleon-style UI, Nested groups, Boolean operations, Keyboard shortcuts, Context menu, Layer Export, Alignment Tools, Distribution, Magnetic Guides, Custom Canvas Sizes, Clipboard Detection, Brush Tool, Eraser Tool, Paint Bucket, Magic Wand (Pixel-Perfect Selection, Add/Subtract/Intersect, Anti-alias, Sample All Layers), Zoom Tool (Zoom In/Out, Fit Screen, Actual Pixels), Undo/Redo (Ctrl+Z/Ctrl+Y), Raster Layers');
 });

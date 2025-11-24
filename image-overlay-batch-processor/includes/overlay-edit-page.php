@@ -4,6 +4,8 @@
         <button id="iobp-menu-toggle" class="iobp-menu-toggle" aria-label="Toggle Menu">☰</button>
         <h1 class="iobp-editor-title">ImgGen Editor</h1>
         <div class="iobp-header-actions">
+            <button id="iobp-undo-btn" class="iobp-btn iobp-icon-btn disabled" title="Undo (Ctrl+Z)" disabled>↶</button>
+            <button id="iobp-redo-btn" class="iobp-btn iobp-icon-btn disabled" title="Redo (Ctrl+Y)" disabled>↷</button>
             <input type="text" id="iobp-overlay-filename" placeholder="my-overlay.png" class="iobp-filename-input" />
             <button id="iobp-save-overlay" class="iobp-btn iobp-btn-primary">💾 SAVE</button>
         </div>

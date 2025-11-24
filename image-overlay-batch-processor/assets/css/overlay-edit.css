@@ -1807,3 +1807,21 @@ body.tool-wand-active .iobp-canvas-container {
 .tool-zoom-active.zoom-out-mode {
     cursor: zoom-out;
 }
+
+/* Undo/Redo Buttons */
+.iobp-icon-btn {
+    min-width: 40px;
+    padding: 8px 12px;
+    font-size: 20px;
+    margin-right: 8px;
+}
+
+.iobp-icon-btn.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.iobp-icon-btn:not(.disabled):hover {
+    background: #3a3a3a;
+    transform: scale(1.05);
+}
