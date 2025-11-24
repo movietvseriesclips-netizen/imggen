@@ -82,6 +82,249 @@
                     </div>
                 </div>
 
+                <!-- Phase 8: Tool Palette Section -->
+                <div class="iobp-sidebar-section">
+                    <button class="iobp-section-header" data-section="tools">
+                        <span class="iobp-section-title">Tool Palette</span>
+                        <span class="iobp-section-arrow">▼</span>
+                    </button>
+                    <div class="iobp-section-content" id="section-tools">
+                        <div class="iobp-form-group">
+                            <label>Active Tool</label>
+                            <div class="iobp-tool-palette">
+                                <button class="iobp-tool-btn active" data-tool="select" title="Select Tool (V)">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
+                                    </svg>
+                                </button>
+                                <button class="iobp-tool-btn" data-tool="brush" title="Brush Tool (B)">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3zm13.71-9.37l-1.34-1.34c-.39-.39-1.02-.39-1.41 0L9 12.25 11.75 15l8.96-8.96c.39-.39.39-1.02 0-1.41z"/>
+                                    </svg>
+                                </button>
+                                <button class="iobp-tool-btn" data-tool="eraser" title="Eraser Tool (E)">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0 1-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83 0M4.22 15.58l3.54 3.53c.78.79 2.04.79 2.83 0l3.53-3.53-6.36-6.36-3.54 3.53c-.78.79-.78 2.05 0 2.83z"/>
+                                    </svg>
+                                </button>
+                                <button class="iobp-tool-btn" data-tool="bucket" title="Paint Bucket Tool (G)">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                                    </svg>
+                                </button>
+                                <button class="iobp-tool-btn" data-tool="wand" title="Magic Wand Tool (W)">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label>Colors</label>
+                            <div class="iobp-color-swatches">
+                                <div class="iobp-color-swatch-container">
+                                    <input type="color" id="iobp-foreground-color" value="#000000" class="iobp-swatch-input" title="Foreground Color" />
+                                    <input type="color" id="iobp-background-color" value="#ffffff" class="iobp-swatch-input iobp-swatch-bg" title="Background Color" />
+                                </div>
+                                <div class="iobp-color-actions">
+                                    <button id="iobp-swap-colors" class="iobp-btn-icon" title="Swap Colors (X)">⇄</button>
+                                    <button id="iobp-reset-colors" class="iobp-btn-icon" title="Reset to Black/White (D)">◐</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 8: Brush Tool Settings -->
+                <div class="iobp-sidebar-section" id="iobp-brush-settings" style="display: none;">
+                    <button class="iobp-section-header" data-section="brush-options">
+                        <span class="iobp-section-title">Brush Settings</span>
+                        <span class="iobp-section-arrow">▼</span>
+                    </button>
+                    <div class="iobp-section-content" id="section-brush-options">
+                        <div class="iobp-form-group">
+                            <label>Size (px)</label>
+                            <div class="iobp-range-group">
+                                <input type="range" id="iobp-brush-size" min="1" max="500" value="20" class="iobp-range" />
+                                <span id="iobp-brush-size-value" class="iobp-range-value">20px</span>
+                            </div>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label>Hardness (%)</label>
+                            <div class="iobp-range-group">
+                                <input type="range" id="iobp-brush-hardness" min="0" max="100" value="100" class="iobp-range" />
+                                <span id="iobp-brush-hardness-value" class="iobp-range-value">100%</span>
+                            </div>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label>Opacity (%)</label>
+                            <div class="iobp-range-group">
+                                <input type="range" id="iobp-brush-opacity" min="0" max="100" value="100" class="iobp-range" />
+                                <span id="iobp-brush-opacity-value" class="iobp-range-value">100%</span>
+                            </div>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label>Flow (%)</label>
+                            <div class="iobp-range-group">
+                                <input type="range" id="iobp-brush-flow" min="0" max="100" value="100" class="iobp-range" />
+                                <span id="iobp-brush-flow-value" class="iobp-range-value">100%</span>
+                            </div>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label>Blend Mode</label>
+                            <select id="iobp-brush-blend-mode" class="iobp-input">
+                                <option value="source-over">Normal</option>
+                                <option value="multiply">Multiply</option>
+                                <option value="screen">Screen</option>
+                                <option value="overlay">Overlay</option>
+                                <option value="darken">Darken</option>
+                                <option value="lighten">Lighten</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 8: Eraser Tool Settings -->
+                <div class="iobp-sidebar-section" id="iobp-eraser-settings" style="display: none;">
+                    <button class="iobp-section-header" data-section="eraser-options">
+                        <span class="iobp-section-title">Eraser Settings</span>
+                        <span class="iobp-section-arrow">▼</span>
+                    </button>
+                    <div class="iobp-section-content" id="section-eraser-options">
+                        <div class="iobp-form-group">
+                            <label>Mode</label>
+                            <select id="iobp-eraser-mode" class="iobp-input">
+                                <option value="brush">Brush (Soft)</option>
+                                <option value="pencil">Pencil (Hard)</option>
+                                <option value="magic">Magic Eraser</option>
+                            </select>
+                        </div>
+                        <div class="iobp-form-group" id="iobp-eraser-size-group">
+                            <label>Size (px)</label>
+                            <div class="iobp-range-group">
+                                <input type="range" id="iobp-eraser-size" min="1" max="500" value="20" class="iobp-range" />
+                                <span id="iobp-eraser-size-value" class="iobp-range-value">20px</span>
+                            </div>
+                        </div>
+                        <div class="iobp-form-group" id="iobp-eraser-opacity-group">
+                            <label>Opacity (%)</label>
+                            <div class="iobp-range-group">
+                                <input type="range" id="iobp-eraser-opacity" min="0" max="100" value="100" class="iobp-range" />
+                                <span id="iobp-eraser-opacity-value" class="iobp-range-value">100%</span>
+                            </div>
+                        </div>
+                        <div class="iobp-form-group" id="iobp-eraser-tolerance-group" style="display: none;">
+                            <label>Tolerance</label>
+                            <div class="iobp-range-group">
+                                <input type="range" id="iobp-eraser-tolerance" min="0" max="255" value="32" class="iobp-range" />
+                                <span id="iobp-eraser-tolerance-value" class="iobp-range-value">32</span>
+                            </div>
+                        </div>
+                        <div class="iobp-form-group" id="iobp-eraser-contiguous-group" style="display: none;">
+                            <label class="iobp-checkbox">
+                                <input type="checkbox" id="iobp-eraser-contiguous" checked />
+                                <span>Contiguous</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 8: Paint Bucket Settings -->
+                <div class="iobp-sidebar-section" id="iobp-bucket-settings" style="display: none;">
+                    <button class="iobp-section-header" data-section="bucket-options">
+                        <span class="iobp-section-title">Paint Bucket Settings</span>
+                        <span class="iobp-section-arrow">▼</span>
+                    </button>
+                    <div class="iobp-section-content" id="section-bucket-options">
+                        <div class="iobp-form-group">
+                            <label>Fill Type</label>
+                            <select id="iobp-bucket-fill-type" class="iobp-input">
+                                <option value="color">Foreground Color</option>
+                                <option value="pattern">Pattern</option>
+                            </select>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label>Tolerance</label>
+                            <div class="iobp-range-group">
+                                <input type="range" id="iobp-bucket-tolerance" min="0" max="255" value="32" class="iobp-range" />
+                                <span id="iobp-bucket-tolerance-value" class="iobp-range-value">32</span>
+                            </div>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label>Fill Opacity (%)</label>
+                            <div class="iobp-range-group">
+                                <input type="range" id="iobp-bucket-opacity" min="0" max="100" value="100" class="iobp-range" />
+                                <span id="iobp-bucket-opacity-value" class="iobp-range-value">100%</span>
+                            </div>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label class="iobp-checkbox">
+                                <input type="checkbox" id="iobp-bucket-contiguous" checked />
+                                <span>Contiguous</span>
+                            </label>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label class="iobp-checkbox">
+                                <input type="checkbox" id="iobp-bucket-antialias" checked />
+                                <span>Anti-alias</span>
+                            </label>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label class="iobp-checkbox">
+                                <input type="checkbox" id="iobp-bucket-all-layers" />
+                                <span>Sample All Layers</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 8: Magic Wand Settings -->
+                <div class="iobp-sidebar-section" id="iobp-wand-settings" style="display: none;">
+                    <button class="iobp-section-header" data-section="wand-options">
+                        <span class="iobp-section-title">Magic Wand Settings</span>
+                        <span class="iobp-section-arrow">▼</span>
+                    </button>
+                    <div class="iobp-section-content" id="section-wand-options">
+                        <div class="iobp-form-group">
+                            <label>Tolerance</label>
+                            <div class="iobp-range-group">
+                                <input type="range" id="iobp-wand-tolerance" min="0" max="255" value="32" class="iobp-range" />
+                                <span id="iobp-wand-tolerance-value" class="iobp-range-value">32</span>
+                            </div>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label class="iobp-checkbox">
+                                <input type="checkbox" id="iobp-wand-contiguous" checked />
+                                <span>Contiguous</span>
+                            </label>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label class="iobp-checkbox">
+                                <input type="checkbox" id="iobp-wand-antialias" checked />
+                                <span>Anti-alias</span>
+                            </label>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label class="iobp-checkbox">
+                                <input type="checkbox" id="iobp-wand-sample-all" />
+                                <span>Sample All Layers</span>
+                            </label>
+                        </div>
+                        <div class="iobp-form-group">
+                            <label>Selection Mode</label>
+                            <div class="iobp-selection-mode-btns">
+                                <button class="iobp-btn iobp-btn-sm active" data-mode="new" title="New Selection">New</button>
+                                <button class="iobp-btn iobp-btn-sm" data-mode="add" title="Add to Selection (+Shift)">Add</button>
+                                <button class="iobp-btn iobp-btn-sm" data-mode="subtract" title="Subtract from Selection (+Alt)">Subtract</button>
+                                <button class="iobp-btn iobp-btn-sm" data-mode="intersect" title="Intersect with Selection">Intersect</button>
+                            </div>
+                        </div>
+                        <div class="iobp-form-group">
+                            <button id="iobp-clear-selection" class="iobp-btn iobp-btn-block">Clear Selection</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Text Section -->
                 <div class="iobp-sidebar-section">
                     <button class="iobp-section-header" data-section="text">

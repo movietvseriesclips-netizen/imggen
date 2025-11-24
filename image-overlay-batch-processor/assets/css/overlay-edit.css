@@ -1515,3 +1515,255 @@ button[title]:hover::before {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
+
+/* ===================================
+   PHASE 8: TOOL PALETTE & PAINT TOOLS
+   ================================ */
+
+/* Tool Palette Grid */
+.iobp-tool-palette {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.iobp-tool-btn {
+    background: #252525;
+    border: 2px solid #3a3a3a;
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a0a0a0;
+    position: relative;
+}
+
+.iobp-tool-btn:hover {
+    background: #2a2a2a;
+    border-color: #5b7cff;
+    color: #5b7cff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(91, 124, 255, 0.2);
+}
+
+.iobp-tool-btn.active {
+    background: linear-gradient(135deg, #5b7cff, #3a7bd5);
+    border-color: #5b7cff;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(91, 124, 255, 0.4);
+}
+
+.iobp-tool-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Color Swatches */
+.iobp-color-swatches {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.iobp-color-swatch-container {
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
+
+.iobp-swatch-input {
+    width: 48px;
+    height: 48px;
+    border: 3px solid #3a3a3a;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.iobp-swatch-input.iobp-swatch-bg {
+    top: 12px;
+    left: 12px;
+    z-index: 1;
+}
+
+.iobp-swatch-input:hover {
+    border-color: #5b7cff;
+    transform: scale(1.05);
+}
+
+.iobp-color-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.iobp-btn-icon {
+    background: #252525;
+    border: 1px solid #3a3a3a;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 18px;
+    color: #a0a0a0;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iobp-btn-icon:hover {
+    background: #2a2a2a;
+    border-color: #5b7cff;
+    color: #5b7cff;
+    transform: scale(1.05);
+}
+
+/* Selection Mode Buttons */
+.iobp-selection-mode-btns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+}
+
+.iobp-selection-mode-btns .iobp-btn {
+    font-size: 11px;
+    padding: 6px 8px;
+}
+
+.iobp-selection-mode-btns .iobp-btn.active {
+    background: #5b7cff;
+    color: #fff;
+    border-color: #5b7cff;
+}
+
+/* Brush Cursor Preview */
+.iobp-canvas-container.brush-cursor canvas,
+.iobp-canvas-container.eraser-cursor canvas {
+    cursor: crosshair !important;
+}
+
+/* Marching Ants Selection */
+.iobp-marching-ants {
+    stroke-dasharray: 5, 5;
+    stroke-dashoffset: 0;
+    stroke: #5b7cff;
+    stroke-width: 2;
+    fill: none;
+    animation: marchingAnts 0.5s linear infinite;
+}
+
+@keyframes marchingAnts {
+    to {
+        stroke-dashoffset: -10;
+    }
+}
+
+/* Raster Layer Indicator */
+.iobp-layer-item.raster-layer::before {
+    content: "🎨";
+    margin-right: 6px;
+    font-size: 14px;
+}
+
+/* Tool Active State Indicators */
+body.tool-brush-active .iobp-canvas-container,
+body.tool-eraser-active .iobp-canvas-container,
+body.tool-bucket-active .iobp-canvas-container,
+body.tool-wand-active .iobp-canvas-container {
+    cursor: crosshair;
+}
+
+/* Phase 8 Buttons Styling */
+#iobp-clear-selection {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+    color: #fff;
+    border: none;
+}
+
+#iobp-clear-selection:hover {
+    background: linear-gradient(135deg, #ee5a6f, #ff6b6b);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+/* Range Input Value Display */
+.iobp-range-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.iobp-range {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #252525;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.iobp-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #5b7cff;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(91, 124, 255, 0.4);
+    transition: all 0.2s;
+}
+
+.iobp-range::-webkit-slider-thumb:hover {
+    background: #3a7bd5;
+    transform: scale(1.2);
+}
+
+.iobp-range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #5b7cff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(91, 124, 255, 0.4);
+    transition: all 0.2s;
+}
+
+.iobp-range::-moz-range-thumb:hover {
+    background: #3a7bd5;
+    transform: scale(1.2);
+}
+
+.iobp-range-value {
+    min-width: 50px;
+    font-size: 13px;
+    color: #a0a0a0;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* Ensure tool settings sections are hidden by default */
+#iobp-brush-settings,
+#iobp-eraser-settings,
+#iobp-bucket-settings,
+#iobp-wand-settings {
+    display: none;
+}
+
+/* Active tool settings visible */
+.tool-brush-active #iobp-brush-settings,
+.tool-eraser-active #iobp-eraser-settings,
+.tool-bucket-active #iobp-bucket-settings,
+.tool-wand-active #iobp-wand-settings {
+    display: block;
+}

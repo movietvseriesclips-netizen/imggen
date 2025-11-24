@@ -3005,6 +3005,732 @@ jQuery(document).ready(function($) {
     // Initialize: Load and render custom presets
     renderCustomPresets();
 
-    console.log('Overlay Edit JS fully loaded (Phase 7 - v2.1.0 - Custom Canvas Size + Clipboard Detection)!');
-    console.log('Features: Dark Palleon-style UI, Nested groups, Boolean operations, Keyboard shortcuts, Context menu, Layer Export, Alignment Tools, Distribution, Magnetic Guides, Custom Canvas Sizes, Clipboard Detection');
+    // ========================================
+    // PHASE 8: SELECTION AND PAINT TOOLS
+    // ========================================
+
+    console.log('Initializing Phase 8: Selection and Paint Tools...');
+
+    // Phase 8: Tool State Variables
+    var activeTool = 'select'; // 'select', 'brush', 'eraser', 'bucket', 'wand'
+    var foregroundColor = '#000000';
+    var backgroundColor = '#ffffff';
+    var currentRasterLayer = null;
+    var rasterLayers = {}; // Store raster layer data by layerId
+    var activeSelection = null; // Store active pixel selection
+    var selectionPath = null; // Fabric path for marching ants display
+    var selectionMode = 'new'; // 'new', 'add', 'subtract', 'intersect'
+    var isDrawing = false;
+    var brushSettings = {
+        size: 20,
+        hardness: 100,
+        opacity: 100,
+        flow: 100,
+        blendMode: 'source-over'
+    };
+    var eraserSettings = {
+        mode: 'brush', // 'brush', 'pencil', 'magic'
+        size: 20,
+        opacity: 100,
+        tolerance: 32,
+        contiguous: true
+    };
+    var bucketSettings = {
+        fillType: 'color', // 'color', 'pattern'
+        tolerance: 32,
+        opacity: 100,
+        contiguous: true,
+        antialias: true,
+        sampleAllLayers: false
+    };
+    var wandSettings = {
+        tolerance: 32,
+        contiguous: true,
+        antialias: true,
+        sampleAll: false
+    };
+
+    // Phase 8: Tool Switching
+    function switchTool(toolName) {
+        console.log('Switching to tool:', toolName);
+
+        // Update active tool
+        activeTool = toolName;
+
+        // Update UI
+        $('.iobp-tool-btn').removeClass('active');
+        $('.iobp-tool-btn[data-tool="' + toolName + '"]').addClass('active');
+
+        // Hide all tool settings
+        $('#iobp-brush-settings, #iobp-eraser-settings, #iobp-bucket-settings, #iobp-wand-settings').hide();
+
+        // Remove body classes
+        $('body').removeClass('tool-brush-active tool-eraser-active tool-bucket-active tool-wand-active');
+
+        // Show relevant settings and update canvas behavior
+        if (toolName === 'brush') {
+            $('#iobp-brush-settings').show();
+            $('body').addClass('tool-brush-active');
+            canvas.selection = false;
+            canvas.defaultCursor = 'crosshair';
+            disableObjectSelection();
+        } else if (toolName === 'eraser') {
+            $('#iobp-eraser-settings').show();
+            $('body').addClass('tool-eraser-active');
+            canvas.selection = false;
+            canvas.defaultCursor = 'crosshair';
+            disableObjectSelection();
+        } else if (toolName === 'bucket') {
+            $('#iobp-bucket-settings').show();
+            $('body').addClass('tool-bucket-active');
+            canvas.selection = false;
+            canvas.defaultCursor = 'crosshair';
+            disableObjectSelection();
+        } else if (toolName === 'wand') {
+            $('#iobp-wand-settings').show();
+            $('body').addClass('tool-wand-active');
+            canvas.selection = false;
+            canvas.defaultCursor = 'crosshair';
+            disableObjectSelection();
+        } else {
+            // Select tool
+            canvas.selection = true;
+            canvas.defaultCursor = 'default';
+            enableObjectSelection();
+        }
+
+        canvas.renderAll();
+    }
+
+    function disableObjectSelection() {
+        canvas.forEachObject(function(obj) {
+            obj.selectable = false;
+            obj.evented = false;
+        });
+        canvas.discardActiveObject();
+    }
+
+    function enableObjectSelection() {
+        canvas.forEachObject(function(obj) {
+            if (!obj.layerLocked) {
+                obj.selectable = true;
+                obj.evented = true;
+            }
+        });
+    }
+
+    // Tool button click handlers
+    $('.iobp-tool-btn').on('click', function() {
+        var tool = $(this).data('tool');
+        switchTool(tool);
+    });
+
+    // Color management
+    $('#iobp-foreground-color').on('change', function() {
+        foregroundColor = $(this).val();
+        console.log('Foreground color changed to:', foregroundColor);
+    });
+
+    $('#iobp-background-color').on('change', function() {
+        backgroundColor = $(this).val();
+        console.log('Background color changed to:', backgroundColor);
+    });
+
+    $('#iobp-swap-colors').on('click', function() {
+        var temp = foregroundColor;
+        foregroundColor = backgroundColor;
+        backgroundColor = temp;
+        $('#iobp-foreground-color').val(foregroundColor);
+        $('#iobp-background-color').val(backgroundColor);
+        console.log('Colors swapped:', foregroundColor, backgroundColor);
+    });
+
+    $('#iobp-reset-colors').on('click', function() {
+        foregroundColor = '#000000';
+        backgroundColor = '#ffffff';
+        $('#iobp-foreground-color').val(foregroundColor);
+        $('#iobp-background-color').val(backgroundColor);
+        console.log('Colors reset to black/white');
+    });
+
+    // Keyboard shortcuts for color management and tools
+    var phase8KeydownHandler = function(e) {
+        if ($(e.target).is('input, textarea')) return;
+
+        // X key - Swap colors
+        if (e.key === 'x' || e.key === 'X') {
+            $('#iobp-swap-colors').click();
+        }
+
+        // D key - Reset colors (only if not Ctrl/Cmd+D for duplicate)
+        if (e.key === 'd' && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            $('#iobp-reset-colors').click();
+        }
+
+        // Tool shortcuts
+        if (e.key === 'v' || e.key === 'V') {
+            switchTool('select');
+        } else if (e.key === 'b' || e.key === 'B') {
+            switchTool('brush');
+        } else if ((e.key === 'e' || e.key === 'E') && !e.ctrlKey && !e.metaKey) {
+            if (activeTool === 'eraser' && e.shiftKey) {
+                // Cycle through eraser modes with Shift+E
+                var currentMode = $('#iobp-eraser-mode').val();
+                var modes = ['brush', 'pencil', 'magic'];
+                var currentIndex = modes.indexOf(currentMode);
+                var nextIndex = (currentIndex + 1) % modes.length;
+                $('#iobp-eraser-mode').val(modes[nextIndex]).trigger('change');
+            } else if (activeTool !== 'eraser') {
+                switchTool('eraser');
+            }
+        } else if ((e.key === 'g' || e.key === 'G') && !e.ctrlKey && !e.metaKey) {
+            switchTool('bucket');
+        } else if (e.key === 'w' || e.key === 'W') {
+            switchTool('wand');
+        }
+
+        // Bracket keys for brush size
+        if (e.key === '[') {
+            var currentSize = parseInt($('#iobp-brush-size').val());
+            $('#iobp-brush-size').val(Math.max(1, currentSize - 5)).trigger('input');
+        } else if (e.key === ']') {
+            var currentSize = parseInt($('#iobp-brush-size').val());
+            $('#iobp-brush-size').val(Math.min(500, currentSize + 5)).trigger('input');
+        }
+    };
+
+    $(document).on('keydown', phase8KeydownHandler);
+
+    // Brush settings sliders
+    $('#iobp-brush-size').on('input', function() {
+        brushSettings.size = parseInt($(this).val());
+        $('#iobp-brush-size-value').text(brushSettings.size + 'px');
+    });
+
+    $('#iobp-brush-hardness').on('input', function() {
+        brushSettings.hardness = parseInt($(this).val());
+        $('#iobp-brush-hardness-value').text(brushSettings.hardness + '%');
+    });
+
+    $('#iobp-brush-opacity').on('input', function() {
+        brushSettings.opacity = parseInt($(this).val());
+        $('#iobp-brush-opacity-value').text(brushSettings.opacity + '%');
+    });
+
+    $('#iobp-brush-flow').on('input', function() {
+        brushSettings.flow = parseInt($(this).val());
+        $('#iobp-brush-flow-value').text(brushSettings.flow + '%');
+    });
+
+    $('#iobp-brush-blend-mode').on('change', function() {
+        brushSettings.blendMode = $(this).val();
+    });
+
+    // Eraser settings
+    $('#iobp-eraser-mode').on('change', function() {
+        eraserSettings.mode = $(this).val();
+
+        if (eraserSettings.mode === 'magic') {
+            $('#iobp-eraser-size-group, #iobp-eraser-opacity-group').hide();
+            $('#iobp-eraser-tolerance-group, #iobp-eraser-contiguous-group').show();
+        } else {
+            $('#iobp-eraser-size-group, #iobp-eraser-opacity-group').show();
+            $('#iobp-eraser-tolerance-group, #iobp-eraser-contiguous-group').hide();
+        }
+    });
+
+    $('#iobp-eraser-size').on('input', function() {
+        eraserSettings.size = parseInt($(this).val());
+        $('#iobp-eraser-size-value').text(eraserSettings.size + 'px');
+    });
+
+    $('#iobp-eraser-opacity').on('input', function() {
+        eraserSettings.opacity = parseInt($(this).val());
+        $('#iobp-eraser-opacity-value').text(eraserSettings.opacity + '%');
+    });
+
+    $('#iobp-eraser-tolerance').on('input', function() {
+        eraserSettings.tolerance = parseInt($(this).val());
+        $('#iobp-eraser-tolerance-value').text(eraserSettings.tolerance);
+    });
+
+    $('#iobp-eraser-contiguous').on('change', function() {
+        eraserSettings.contiguous = $(this).is(':checked');
+    });
+
+    // Paint Bucket settings
+    $('#iobp-bucket-tolerance').on('input', function() {
+        bucketSettings.tolerance = parseInt($(this).val());
+        $('#iobp-bucket-tolerance-value').text(bucketSettings.tolerance);
+    });
+
+    $('#iobp-bucket-opacity').on('input', function() {
+        bucketSettings.opacity = parseInt($(this).val());
+        $('#iobp-bucket-opacity-value').text(bucketSettings.opacity + '%');
+    });
+
+    $('#iobp-bucket-fill-type').on('change', function() {
+        bucketSettings.fillType = $(this).val();
+    });
+
+    $('#iobp-bucket-contiguous').on('change', function() {
+        bucketSettings.contiguous = $(this).is(':checked');
+    });
+
+    $('#iobp-bucket-antialias').on('change', function() {
+        bucketSettings.antialias = $(this).is(':checked');
+    });
+
+    $('#iobp-bucket-all-layers').on('change', function() {
+        bucketSettings.sampleAllLayers = $(this).is(':checked');
+    });
+
+    // Magic Wand settings
+    $('#iobp-wand-tolerance').on('input', function() {
+        wandSettings.tolerance = parseInt($(this).val());
+        $('#iobp-wand-tolerance-value').text(wandSettings.tolerance);
+    });
+
+    $('#iobp-wand-contiguous').on('change', function() {
+        wandSettings.contiguous = $(this).is(':checked');
+    });
+
+    $('#iobp-wand-antialias').on('change', function() {
+        wandSettings.antialias = $(this).is(':checked');
+    });
+
+    $('#iobp-wand-sample-all').on('change', function() {
+        wandSettings.sampleAll = $(this).is(':checked');
+    });
+
+    // Selection mode buttons
+    $('.iobp-selection-mode-btns .iobp-btn').on('click', function() {
+        $('.iobp-selection-mode-btns .iobp-btn').removeClass('active');
+        $(this).addClass('active');
+        selectionMode = $(this).data('mode');
+        console.log('Selection mode changed to:', selectionMode);
+    });
+
+    $('#iobp-clear-selection').on('click', function() {
+        clearSelection();
+    });
+
+    function clearSelection() {
+        activeSelection = null;
+        if (selectionPath) {
+            canvas.remove(selectionPath);
+            selectionPath = null;
+        }
+        canvas.renderAll();
+        console.log('Selection cleared');
+    }
+
+    // Create or get current raster layer
+    function getCurrentRasterLayer() {
+        if (!currentRasterLayer || !canvas.contains(currentRasterLayer)) {
+            // Create new raster layer
+            var tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.getWidth();
+            tempCanvas.height = canvas.getHeight();
+
+            var ctx = tempCanvas.getContext('2d');
+            ctx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+            var dataURL = tempCanvas.toDataURL('image/png');
+
+            fabric.Image.fromURL(dataURL, function(img) {
+                img.set({
+                    left: 0,
+                    top: 0,
+                    selectable: false,
+                    evented: false,
+                    hasControls: false,
+                    hasBorders: false
+                });
+
+                assignLayerId(img);
+                img.layerName = 'Raster Layer ' + (Object.keys(rasterLayers).length + 1);
+                img.layerType = 'raster';
+
+                // Store raster layer data
+                rasterLayers[img.layerId] = {
+                    canvas: tempCanvas,
+                    context: ctx
+                };
+
+                canvas.add(img);
+                currentRasterLayer = img;
+
+                console.log('Created new raster layer:', img.layerName);
+            });
+        }
+
+        return currentRasterLayer;
+    }
+
+    // Get raster layer context for painting
+    function getRasterLayerContext() {
+        var rasterLayer = getCurrentRasterLayer();
+        if (rasterLayer && rasterLayers[rasterLayer.layerId]) {
+            return rasterLayers[rasterLayer.layerId].context;
+        }
+        return null;
+    }
+
+    // Update raster layer image after painting
+    function updateRasterLayerImage() {
+        if (currentRasterLayer && rasterLayers[currentRasterLayer.layerId]) {
+            var rasterCanvas = rasterLayers[currentRasterLayer.layerId].canvas;
+            var dataURL = rasterCanvas.toDataURL('image/png');
+
+            currentRasterLayer.setSrc(dataURL, function() {
+                canvas.renderAll();
+            });
+        }
+    }
+
+    // Phase 8: Brush Tool Implementation
+    var lastX, lastY;
+
+    canvas.on('mouse:down', function(options) {
+        if (activeTool === 'brush' && !isDrawing) {
+            isDrawing = true;
+            var pointer = canvas.getPointer(options.e);
+            lastX = pointer.x;
+            lastY = pointer.y;
+
+            // Ensure raster layer exists
+            getCurrentRasterLayer();
+
+            setTimeout(function() {
+                paintBrushStroke(lastX, lastY, lastX, lastY);
+            }, 100);
+        } else if (activeTool === 'eraser' && !isDrawing) {
+            isDrawing = true;
+            var pointer = canvas.getPointer(options.e);
+            lastX = pointer.x;
+            lastY = pointer.y;
+
+            if (eraserSettings.mode === 'magic') {
+                performMagicErase(pointer.x, pointer.y);
+            } else {
+                performErase(lastX, lastY, lastX, lastY);
+            }
+        } else if (activeTool === 'bucket') {
+            var pointer = canvas.getPointer(options.e);
+            performBucketFill(pointer.x, pointer.y);
+        } else if (activeTool === 'wand') {
+            var pointer = canvas.getPointer(options.e);
+            performMagicWandSelection(pointer.x, pointer.y);
+        }
+    });
+
+    canvas.on('mouse:move', function(options) {
+        if (activeTool === 'brush' && isDrawing) {
+            var pointer = canvas.getPointer(options.e);
+            paintBrushStroke(lastX, lastY, pointer.x, pointer.y);
+            lastX = pointer.x;
+            lastY = pointer.y;
+        } else if (activeTool === 'eraser' && isDrawing && eraserSettings.mode !== 'magic') {
+            var pointer = canvas.getPointer(options.e);
+            performErase(lastX, lastY, pointer.x, pointer.y);
+            lastX = pointer.x;
+            lastY = pointer.y;
+        }
+    });
+
+    canvas.on('mouse:up', function() {
+        if ((activeTool === 'brush' || activeTool === 'eraser') && isDrawing) {
+            isDrawing = false;
+        }
+    });
+
+    function paintBrushStroke(x1, y1, x2, y2) {
+        var ctx = getRasterLayerContext();
+        if (!ctx) return;
+
+        ctx.save();
+        ctx.globalCompositeOperation = brushSettings.blendMode;
+        ctx.globalAlpha = (brushSettings.opacity / 100) * (brushSettings.flow / 100);
+        ctx.strokeStyle = foregroundColor;
+        ctx.lineWidth = brushSettings.size;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        // Apply hardness (blur effect)
+        if (brushSettings.hardness < 100) {
+            ctx.shadowBlur = brushSettings.size * (1 - brushSettings.hardness / 100);
+            ctx.shadowColor = foregroundColor;
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+        ctx.restore();
+
+        updateRasterLayerImage();
+    }
+
+    function performErase(x1, y1, x2, y2) {
+        var ctx = getRasterLayerContext();
+        if (!ctx) return;
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.globalAlpha = eraserSettings.opacity / 100;
+        ctx.strokeStyle = 'rgba(0,0,0,1)';
+        ctx.lineWidth = eraserSettings.size;
+        ctx.lineCap = eraserSettings.mode === 'pencil' ? 'butt' : 'round';
+        ctx.lineJoin = eraserSettings.mode === 'pencil' ? 'miter' : 'round';
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+        ctx.restore();
+
+        updateRasterLayerImage();
+    }
+
+    function performMagicErase(x, y) {
+        var canvasEl = document.getElementById('iobp-overlay-canvas');
+        var ctx = canvasEl.getContext('2d');
+        var imageData = ctx.getImageData(0, 0, canvas.getWidth(), canvas.getHeight());
+        var data = imageData.data;
+
+        var targetPixel = getPixelColor(imageData, Math.floor(x), Math.floor(y));
+        if (!targetPixel) return;
+
+        var pixelsToErase = [];
+
+        if (eraserSettings.contiguous) {
+            pixelsToErase = floodFillSelection(imageData, Math.floor(x), Math.floor(y), targetPixel, eraserSettings.tolerance);
+        } else {
+            pixelsToErase = globalColorSelection(imageData, targetPixel, eraserSettings.tolerance);
+        }
+
+        // Apply erase to raster layer
+        var rasterCtx = getRasterLayerContext();
+        if (!rasterCtx) return;
+
+        var rasterImageData = rasterCtx.getImageData(0, 0, canvas.getWidth(), canvas.getHeight());
+        var rasterData = rasterImageData.data;
+
+        pixelsToErase.forEach(function(pixelIndex) {
+            rasterData[pixelIndex * 4 + 3] = 0; // Set alpha to 0
+        });
+
+        rasterCtx.putImageData(rasterImageData, 0, 0);
+        updateRasterLayerImage();
+    }
+
+    function performBucketFill(x, y) {
+        var canvasEl = document.getElementById('iobp-overlay-canvas');
+        var ctx = canvasEl.getContext('2d');
+        var imageData = ctx.getImageData(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        var targetPixel = getPixelColor(imageData, Math.floor(x), Math.floor(y));
+        if (!targetPixel) return;
+
+        var pixelsToFill = [];
+
+        if (bucketSettings.contiguous) {
+            pixelsToFill = floodFillSelection(imageData, Math.floor(x), Math.floor(y), targetPixel, bucketSettings.tolerance);
+        } else {
+            pixelsToFill = globalColorSelection(imageData, targetPixel, bucketSettings.tolerance);
+        }
+
+        // Create or get raster layer
+        getCurrentRasterLayer();
+
+        setTimeout(function() {
+            var rasterCtx = getRasterLayerContext();
+            if (!rasterCtx) return;
+
+            var fillColor = hexToRgb(foregroundColor);
+            var alpha = bucketSettings.opacity / 100;
+
+            var rasterImageData = rasterCtx.getImageData(0, 0, canvas.getWidth(), canvas.getHeight());
+            var rasterData = rasterImageData.data;
+
+            pixelsToFill.forEach(function(pixelIndex) {
+                var i = pixelIndex * 4;
+                rasterData[i] = fillColor.r;
+                rasterData[i + 1] = fillColor.g;
+                rasterData[i + 2] = fillColor.b;
+                rasterData[i + 3] = Math.floor(alpha * 255);
+            });
+
+            rasterCtx.putImageData(rasterImageData, 0, 0);
+            updateRasterLayerImage();
+        }, 100);
+    }
+
+    function performMagicWandSelection(x, y) {
+        var canvasEl = document.getElementById('iobp-overlay-canvas');
+        var ctx = canvasEl.getContext('2d');
+        var imageData = ctx.getImageData(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        var targetPixel = getPixelColor(imageData, Math.floor(x), Math.floor(y));
+        if (!targetPixel) return;
+
+        var selectedPixels = [];
+
+        if (wandSettings.contiguous) {
+            selectedPixels = floodFillSelection(imageData, Math.floor(x), Math.floor(y), targetPixel, wandSettings.tolerance);
+        } else {
+            selectedPixels = globalColorSelection(imageData, targetPixel, wandSettings.tolerance);
+        }
+
+        // Create selection path (simplified bounding box for now)
+        if (selectedPixels.length > 0) {
+            var minX = canvas.getWidth(), minY = canvas.getHeight();
+            var maxX = 0, maxY = 0;
+
+            selectedPixels.forEach(function(pixelIndex) {
+                var width = canvas.getWidth();
+                var px = pixelIndex % width;
+                var py = Math.floor(pixelIndex / width);
+                minX = Math.min(minX, px);
+                minY = Math.min(minY, py);
+                maxX = Math.max(maxX, px);
+                maxY = Math.max(maxY, py);
+            });
+
+            // Clear existing selection
+            if (selectionPath) {
+                canvas.remove(selectionPath);
+            }
+
+            // Create selection rectangle with marching ants
+            selectionPath = new fabric.Rect({
+                left: minX,
+                top: minY,
+                width: maxX - minX,
+                height: maxY - minY,
+                fill: 'transparent',
+                stroke: '#5b7cff',
+                strokeWidth: 2,
+                strokeDashArray: [5, 5],
+                selectable: false,
+                evented: false,
+                excludeFromExport: true
+            });
+
+            canvas.add(selectionPath);
+            canvas.renderAll();
+
+            activeSelection = selectedPixels;
+            console.log('Magic wand selection created:', selectedPixels.length, 'pixels');
+
+            // Animate marching ants
+            animateMarchingAnts();
+        }
+    }
+
+    function animateMarchingAnts() {
+        if (selectionPath) {
+            var offset = 0;
+            var marchInterval = setInterval(function() {
+                if (selectionPath && canvas.contains(selectionPath)) {
+                    offset = (offset + 1) % 10;
+                    selectionPath.set('strokeDashOffset', offset);
+                    canvas.renderAll();
+                } else {
+                    clearInterval(marchInterval);
+                }
+            }, 50);
+        }
+    }
+
+    // Helper: Flood fill algorithm
+    function floodFillSelection(imageData, startX, startY, targetColor, tolerance) {
+        var width = imageData.width;
+        var height = imageData.height;
+        var visited = new Array(width * height).fill(false);
+        var selectedPixels = [];
+        var queue = [[startX, startY]];
+
+        while (queue.length > 0) {
+            var coords = queue.shift();
+            var x = coords[0];
+            var y = coords[1];
+            var index = y * width + x;
+
+            if (x < 0 || x >= width || y < 0 || y >= height || visited[index]) {
+                continue;
+            }
+
+            var currentPixel = getPixelColor(imageData, x, y);
+            if (!currentPixel || !colorMatch(currentPixel, targetColor, tolerance)) {
+                continue;
+            }
+
+            visited[index] = true;
+            selectedPixels.push(index);
+
+            queue.push([x + 1, y]);
+            queue.push([x - 1, y]);
+            queue.push([x, y + 1]);
+            queue.push([x, y - 1]);
+        }
+
+        return selectedPixels;
+    }
+
+    // Helper: Global color selection
+    function globalColorSelection(imageData, targetColor, tolerance) {
+        var width = imageData.width;
+        var height = imageData.height;
+        var selectedPixels = [];
+
+        for (var y = 0; y < height; y++) {
+            for (var x = 0; x < width; x++) {
+                var pixel = getPixelColor(imageData, x, y);
+                if (pixel && colorMatch(pixel, targetColor, tolerance)) {
+                    selectedPixels.push(y * width + x);
+                }
+            }
+        }
+
+        return selectedPixels;
+    }
+
+    // Helper: Get pixel color
+    function getPixelColor(imageData, x, y) {
+        var index = (y * imageData.width + x) * 4;
+        if (index >= 0 && index < imageData.data.length) {
+            return {
+                r: imageData.data[index],
+                g: imageData.data[index + 1],
+                b: imageData.data[index + 2],
+                a: imageData.data[index + 3]
+            };
+        }
+        return null;
+    }
+
+    // Helper: Color matching with tolerance
+    function colorMatch(color1, color2, tolerance) {
+        var rDiff = Math.abs(color1.r - color2.r);
+        var gDiff = Math.abs(color1.g - color2.g);
+        var bDiff = Math.abs(color1.b - color2.b);
+        return (rDiff + gDiff + bDiff) <= tolerance * 3;
+    }
+
+    // Helper: Hex to RGB
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : { r: 0, g: 0, b: 0 };
+    }
+
+    console.log('Phase 8 tools initialized successfully!');
+    console.log('Overlay Edit JS fully loaded (Phase 8 - v1.8.0 - Selection & Paint Tools)!');
+    console.log('Features: Dark Palleon-style UI, Nested groups, Boolean operations, Keyboard shortcuts, Context menu, Layer Export, Alignment Tools, Distribution, Magnetic Guides, Custom Canvas Sizes, Clipboard Detection, Brush Tool, Eraser Tool, Paint Bucket, Magic Wand, Raster Layers');
 });

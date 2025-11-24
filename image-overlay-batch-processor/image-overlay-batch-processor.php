@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Image Overlay Batch Processor
- * Description: Apply overlays to images in batch. Supports custom canvas sizes with clipboard detection.
- * Version: 2.1.2
+ * Description: Apply overlays to images in batch. Features brush, eraser, paint bucket, and magic wand tools with raster layer support.
+ * Version: 1.8.0
  * Author: Your Name
  * Text Domain: image-overlay-batch
  */
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('IOBP_VERSION', '2.1.2');
+define('IOBP_VERSION', '1.8.0');
 define('IOBP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('IOBP_PLUGIN_URL', plugin_dir_url(__FILE__));
 
