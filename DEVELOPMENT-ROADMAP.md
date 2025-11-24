@@ -471,6 +471,221 @@ This roadmap details the implementation of Photoshop-style layer and shape manag
 
 ---
 
+## Phase 7: Custom Canvas Size with Clipboard Detection 🔨 IN PROGRESS
+
+### Goals
+- Add custom canvas size input alongside existing 800x450 and 728x218 presets
+- Detect images on clipboard and auto-fill dimensions
+- One-click "New from Clipboard" workflow
+- Optional clipboard image paste to canvas
+- Save custom sizes as user presets
+
+### Implementation Notes
+- Canvas selection UI:
+  - Keep existing preset buttons: 800x450, 728x218
+  - Add "Custom Size" button to open dialog
+  - Add "New from Clipboard" button for one-click workflow
+- Custom Size Dialog:
+  - Width/Height numeric inputs (pixels)
+  - Constrain proportions checkbox with lock icon
+  - Portrait/Landscape orientation toggle
+  - Preset name field to save custom size
+  - Auto-detect clipboard image using Clipboard API
+- Clipboard Detection:
+  - Check clipboard when dialog opens
+  - Show banner if image detected: "📋 Image detected on clipboard (1920x1080)"
+  - Pre-fill width/height from clipboard image dimensions
+  - Show preview thumbnail of clipboard image
+  - "Use Clipboard Size" button for one-click
+  - "Paste Image to Canvas" checkbox to import image as base layer
+- "New from Clipboard" Button:
+  - Direct one-click: detect clipboard → create canvas → paste image
+  - Skip dialog if clipboard has image
+  - Fallback to custom dialog if clipboard empty
+- Custom Preset Management:
+  - Save custom sizes with user-defined names
+  - Display saved presets alongside default ones
+  - Manage presets: edit, delete, reorder
+  - Store in WordPress user meta or localStorage
+- Browser Compatibility:
+  - Use Clipboard API (navigator.clipboard.read()) for modern browsers
+  - Fallback to manual paste area for older browsers
+  - Request clipboard permission on first use
+  - Show explanatory message if permission denied
+
+### Technical Implementation
+- Clipboard API integration:
+  ```javascript
+  async function detectClipboardImage() {
+    const items = await navigator.clipboard.read();
+    for (const item of items) {
+      if (item.types.includes('image/png') || item.types.includes('image/jpeg')) {
+        const blob = await item.getType(item.types[0]);
+        const img = new Image();
+        img.src = URL.createObjectURL(blob);
+        await new Promise(resolve => img.onload = resolve);
+        return { width: img.naturalWidth, height: img.naturalHeight, blob, hasImage: true };
+      }
+    }
+    return { hasImage: false };
+  }
+  ```
+- Custom canvas creation:
+  - Update canvas_sizes array dynamically
+  - Store custom size in session for current editing session
+  - Update all overlay operations to support dynamic sizes
+- Paste image to canvas:
+  - Convert clipboard blob to Fabric.Image
+  - Add as base layer at position (0, 0)
+  - Scale to fit canvas if larger than canvas size
+
+### Testing Steps
+- Click "Custom Size" button and verify dialog opens
+- Enter custom dimensions (e.g., 1920x1080) and create canvas
+- Copy image to clipboard (screenshot or browser image)
+- Click "Custom Size" and verify clipboard detection banner appears
+- Verify width/height pre-filled with clipboard dimensions
+- Check "Paste Image to Canvas" and verify image appears on canvas
+- Click "New from Clipboard" and verify one-click workflow
+- Test with no clipboard image and verify fallback to custom dialog
+- Save custom size as preset and verify it appears in main canvas selection
+- Test constrain proportions toggle
+- Test portrait/landscape orientation toggle
+- Verify custom canvas works with all existing tools (text, shapes, images, layers)
+- Test on browsers with and without Clipboard API support
+
+---
+
+## Phase 8: Selection and Paint Tools 📋 PLANNED
+
+### Goals
+- Add Magic Wand tool for pixel-based selection
+- Add Brush tool for painting on canvas
+- Add Eraser tool for removing pixels
+- Add Paint Bucket tool for filling areas
+- Unified tool system with foreground/background colors
+- Support for raster layers alongside vector layers
+
+### Implementation Notes
+
+#### Magic Wand Tool
+- Click to select pixels based on color similarity
+- Parameters:
+  - Tolerance slider (0-255, default 32)
+  - Contiguous checkbox (select only connected pixels)
+  - Anti-alias checkbox for smooth edges
+  - Sample All Layers toggle
+- Selection modes: New, Add (+Shift), Subtract (+Alt), Intersect
+- Visual feedback with animated marching ants border
+- Store selection as path for masking and fills
+
+#### Brush Tool
+- Paint on canvas with adjustable properties
+- Parameters:
+  - Size slider (1-500px) with bracket key shortcuts ([ and ])
+  - Hardness slider (0-100%) for edge softness
+  - Opacity slider (0-100%) with number key shortcuts
+  - Flow slider (0-100%) for paint build-up
+  - Blend mode dropdown (16 modes)
+- Color picker with foreground/background swatches
+- Brush cursor preview showing size and hardness
+- Create new raster layer automatically when painting
+- Support for brush presets
+- Right-click for quick size/hardness panel
+
+#### Eraser Tool
+- Remove pixels by painting transparency
+- Three modes: Brush (soft), Pencil (hard), Block (fixed square)
+- Parameters:
+  - Size slider (1-500px)
+  - Opacity slider (0-100%)
+  - Flow slider (0-100%)
+- Magic Eraser sub-tool:
+  - Click to erase pixels within tolerance
+  - Tolerance slider (0-255)
+  - Contiguous option
+  - Opacity for partial erase
+- Toggle between modes with Shift+E
+- Works only on unlocked layers
+
+#### Paint Bucket Tool
+- Fill areas with color or patterns
+- Parameters:
+  - Fill type: Color or Pattern
+  - Tolerance slider (0-255, default 32)
+  - Contiguous checkbox
+  - Anti-alias checkbox
+  - All Layers sample option
+  - Opacity slider (0-100%)
+- Pattern selector (use uploaded images as patterns)
+- Uses foreground color for fills
+- Integration with blend modes
+
+#### Unified Tool System
+- Tool palette in left sidebar
+- Foreground/background color swatches
+  - Click to open color picker
+  - Swap with X key
+  - Reset to black/white with D key
+- Active tool highlighted
+- Cursor changes per tool
+- Keyboard shortcuts for switching
+- Tool options panel updates contextually
+- All tools respect layer lock/visibility
+- Undo/redo support
+
+#### Raster Layer Support
+- New layer type: raster (alongside text/shape/image)
+- Raster layers stored as canvas ImageData
+- Support all existing features:
+  - Opacity, blend modes, lock, hide
+  - Layer panel management
+  - Grouping and reordering
+  - Export functionality
+- Clear visual distinction from vector layers in panel
+
+#### Performance Optimization
+- Canvas-based rendering for brush strokes
+- Debounced updates during painting
+- Efficient pixel manipulation using ImageData API
+- Progressive rendering for large brushes
+- Cached brush stamp patterns
+
+#### Selection System
+- Canvas path API for marching ants animation
+- Store selection as pixel mask
+- Selection persistence across tool switches
+- Transform selections (move, scale, rotate)
+
+#### File Format Extension
+- Extend overlay JSON to include raster layer data
+- Store raster layers as base64 PNG data URLs
+- Maintain backward compatibility
+- Optimize with compression
+
+### Testing Steps
+- Select Magic Wand tool and click on canvas area
+- Adjust tolerance and verify selection changes
+- Test contiguous vs non-contiguous selection
+- Select Brush tool and paint on canvas
+- Adjust size, hardness, opacity, flow
+- Test blend modes while painting
+- Use bracket keys to change brush size
+- Select Eraser tool and erase painted areas
+- Test Magic Eraser mode with tolerance
+- Select Paint Bucket and fill areas
+- Test with color and pattern fills
+- Verify foreground/background color swatches work
+- Test X key to swap colors, D key to reset
+- Create raster layers and verify they appear in layer panel
+- Test all layer operations on raster layers
+- Verify selections persist when switching tools
+- Test painting within selection boundaries
+- Export raster layers and verify quality
+- Save and load overlays with raster layers
+- Test performance with large brush sizes
+
+---
 For ongoing feedback, please use the GitHub Issues and Pull Requests in this repository.
 
 ---
