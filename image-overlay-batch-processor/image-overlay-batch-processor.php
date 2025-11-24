@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Image Overlay Batch Processor
- * Description: Apply overlays to images in batch. Supports 800x450 and 728x218 canvas sizes.
- * Version: 2.0.1
+ * Description: Apply overlays to images in batch. Supports custom canvas sizes with clipboard detection.
+ * Version: 2.1.0
  * Author: Your Name
  * Text Domain: image-overlay-batch
  */
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('IOBP_VERSION', '2.0.1');
+define('IOBP_VERSION', '2.1.0');
 define('IOBP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('IOBP_PLUGIN_URL', plugin_dir_url(__FILE__));
 

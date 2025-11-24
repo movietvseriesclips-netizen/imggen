@@ -61,15 +61,23 @@
                     </button>
                     <div class="iobp-section-content" id="section-canvas">
                         <div class="iobp-form-group">
-                            <label>Canvas Size</label>
+                            <label>Preset Sizes</label>
                             <select id="iobp-editor-canvas-size" class="iobp-input">
                                 <option value="800x450" selected>800x450</option>
                                 <option value="728x218">728x218</option>
                             </select>
                         </div>
+                        <!-- Phase 7: Custom presets will appear here -->
+                        <div id="iobp-custom-presets-container"></div>
+
                         <div class="iobp-form-group">
                             <button id="iobp-start-blank" class="iobp-btn iobp-btn-block">Blank Canvas</button>
                             <button id="iobp-load-from-library" class="iobp-btn iobp-btn-block">Load from Library</button>
+                        </div>
+                        <!-- Phase 7: Custom Canvas Size Buttons -->
+                        <div class="iobp-form-group">
+                            <button id="iobp-custom-size-btn" class="iobp-btn iobp-btn-block">Custom Size...</button>
+                            <button id="iobp-clipboard-canvas-btn" class="iobp-btn iobp-btn-block">New from Clipboard</button>
                         </div>
                     </div>
                 </div>
@@ -333,4 +341,74 @@
 
     <!-- Mobile Menu Overlay -->
     <div class="iobp-sidebar-overlay" id="iobp-sidebar-overlay"></div>
+
+    <!-- Phase 7: Custom Canvas Size Dialog -->
+    <div id="iobp-custom-size-modal" class="iobp-modal">
+        <div class="iobp-modal-content">
+            <div class="iobp-modal-header">
+                <h2>Custom Canvas Size</h2>
+                <button class="iobp-modal-close">&times;</button>
+            </div>
+            <div class="iobp-modal-body">
+                <!-- Clipboard Detection Banner -->
+                <div id="iobp-clipboard-banner" class="iobp-clipboard-banner" style="display: none;">
+                    <span id="iobp-clipboard-info"></span>
+                    <button id="iobp-use-clipboard-size" class="iobp-btn iobp-btn-sm">Use These Dimensions</button>
+                </div>
+
+                <!-- Clipboard Image Preview -->
+                <div id="iobp-clipboard-preview-container" style="display: none; margin: 10px 0; text-align: center;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Clipboard Preview:</label>
+                    <img id="iobp-clipboard-preview" style="max-width: 100%; max-height: 200px; border: 1px solid #ddd; border-radius: 4px;" />
+                </div>
+
+                <!-- Dimensions Input -->
+                <div class="iobp-form-row">
+                    <div class="iobp-form-group">
+                        <label>Width (px)</label>
+                        <input type="number" id="iobp-custom-width" class="iobp-input" value="1920" min="100" max="4000" />
+                    </div>
+                    <div class="iobp-form-group">
+                        <label>Height (px)</label>
+                        <input type="number" id="iobp-custom-height" class="iobp-input" value="1080" min="100" max="4000" />
+                    </div>
+                </div>
+
+                <!-- Constrain Proportions -->
+                <div class="iobp-form-group">
+                    <label class="iobp-checkbox">
+                        <input type="checkbox" id="iobp-constrain-proportions" />
+                        <span>🔒 Constrain Proportions</span>
+                    </label>
+                </div>
+
+                <!-- Orientation Toggle -->
+                <div class="iobp-form-group">
+                    <label>Orientation</label>
+                    <div class="iobp-orientation-toggle">
+                        <button id="iobp-orientation-landscape" class="iobp-btn iobp-btn-sm active">Landscape</button>
+                        <button id="iobp-orientation-portrait" class="iobp-btn iobp-btn-sm">Portrait</button>
+                    </div>
+                </div>
+
+                <!-- Paste Clipboard Image -->
+                <div id="iobp-paste-option" class="iobp-form-group" style="display: none;">
+                    <label class="iobp-checkbox">
+                        <input type="checkbox" id="iobp-paste-clipboard-image" />
+                        <span>Paste clipboard image to canvas</span>
+                    </label>
+                </div>
+
+                <!-- Save as Preset -->
+                <div class="iobp-form-group">
+                    <label>Save as Preset (optional)</label>
+                    <input type="text" id="iobp-preset-name" class="iobp-input" placeholder="e.g., Instagram Post" />
+                </div>
+            </div>
+            <div class="iobp-modal-footer">
+                <button id="iobp-cancel-custom-size" class="iobp-btn">Cancel</button>
+                <button id="iobp-apply-custom-size" class="iobp-btn iobp-btn-primary">Create Canvas</button>
+            </div>
+        </div>
+    </div>
 </div>
