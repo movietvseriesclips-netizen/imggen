@@ -3066,7 +3066,7 @@ jQuery(document).ready(function($) {
         $('#iobp-brush-settings, #iobp-eraser-settings, #iobp-bucket-settings, #iobp-wand-settings').hide();
 
         // Remove body classes
-        $('body').removeClass('tool-brush-active tool-eraser-active tool-bucket-active tool-wand-active');
+        $('body').removeClass('tool-brush-active tool-eraser-active tool-bucket-active tool-wand-active tool-zoom-active');
 
         // Show relevant settings and update canvas behavior
         if (toolName === 'brush') {
@@ -3092,6 +3092,11 @@ jQuery(document).ready(function($) {
             $('body').addClass('tool-wand-active');
             canvas.selection = false;
             canvas.defaultCursor = 'crosshair';
+            disableObjectSelection();
+        } else if (toolName === 'zoom') {
+            $('body').addClass('tool-zoom-active');
+            canvas.selection = false;
+            canvas.defaultCursor = 'zoom-in';
             disableObjectSelection();
         } else {
             // Select tool
@@ -3396,6 +3401,27 @@ jQuery(document).ready(function($) {
     var lastX, lastY;
 
     canvas.on('mouse:down', function(options) {
+        // Handle zoom tool
+        if (activeTool === 'zoom') {
+            if (options.e.button === 2) {
+                // Right-click - show context menu
+                options.e.preventDefault();
+                var canvasOffset = $('#iobp-overlay-canvas').offset();
+                showZoomContextMenu(options.e.clientX, options.e.clientY);
+                return;
+            } else if (options.e.button === 0) {
+                // Left-click - zoom in
+                hideZoomContextMenu();
+                zoomIn();
+                return;
+            }
+        }
+
+        // Hide zoom context menu if clicking with other tools
+        if (typeof hideZoomContextMenu === 'function') {
+            hideZoomContextMenu();
+        }
+
         if (activeTool === 'brush' && !isDrawing) {
             isDrawing = true;
             var pointer = canvas.getPointer(options.e);
@@ -3961,7 +3987,109 @@ jQuery(document).ready(function($) {
         } : { r: 0, g: 0, b: 0 };
     }
 
+    // ===================================================================
+    // Phase 8.2: Zoom Tool - Photoshop-like Zoom Functionality
+    // ===================================================================
+
+    var currentZoom = 1;
+    var zoomContextMenu = $('#iobp-zoom-context-menu');
+
+    // Zoom In
+    function zoomIn() {
+        var newZoom = Math.min(currentZoom * 1.25, 10); // Max 10x zoom
+        canvas.setZoom(newZoom);
+        currentZoom = newZoom;
+        canvas.renderAll();
+        console.log('Zoomed in to:', (currentZoom * 100).toFixed(0) + '%');
+    }
+
+    // Zoom Out
+    function zoomOut() {
+        var newZoom = Math.max(currentZoom / 1.25, 0.1); // Min 0.1x zoom
+        canvas.setZoom(newZoom);
+        currentZoom = newZoom;
+        canvas.renderAll();
+        console.log('Zoomed out to:', (currentZoom * 100).toFixed(0) + '%');
+    }
+
+    // Fit on Screen
+    function fitOnScreen() {
+        var canvasContainer = $('.iobp-canvas-container');
+        var containerWidth = canvasContainer.width();
+        var containerHeight = canvasContainer.height();
+        var canvasWidth = canvas.getWidth();
+        var canvasHeight = canvas.getHeight();
+
+        var scaleX = (containerWidth - 40) / canvasWidth;
+        var scaleY = (containerHeight - 40) / canvasHeight;
+        var newZoom = Math.min(scaleX, scaleY, 1); // Don't zoom in beyond 100%
+
+        canvas.setZoom(newZoom);
+        currentZoom = newZoom;
+        canvas.renderAll();
+        console.log('Fit on screen:', (currentZoom * 100).toFixed(0) + '%');
+    }
+
+    // Actual Pixels (100% zoom)
+    function actualPixels() {
+        canvas.setZoom(1);
+        currentZoom = 1;
+        canvas.renderAll();
+        console.log('Actual pixels: 100%');
+    }
+
+    // Show zoom context menu
+    function showZoomContextMenu(x, y) {
+        zoomContextMenu.css({
+            left: x + 'px',
+            top: y + 'px',
+            display: 'block'
+        });
+    }
+
+    // Hide zoom context menu
+    function hideZoomContextMenu() {
+        zoomContextMenu.hide();
+    }
+
+    // Prevent default context menu on canvas
+    $('#iobp-overlay-canvas').on('contextmenu', function(e) {
+        if (activeTool === 'zoom') {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // Zoom context menu item clicks
+    $('.iobp-context-menu-item').on('click', function() {
+        var action = $(this).data('action');
+
+        switch(action) {
+            case 'zoom-in':
+                zoomIn();
+                break;
+            case 'zoom-out':
+                zoomOut();
+                break;
+            case 'fit-screen':
+                fitOnScreen();
+                break;
+            case 'actual-pixels':
+                actualPixels();
+                break;
+        }
+
+        hideZoomContextMenu();
+    });
+
+    // Hide context menu when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.iobp-zoom-context-menu').length) {
+            hideZoomContextMenu();
+        }
+    });
+
     console.log('Phase 8 tools initialized successfully!');
-    console.log('Overlay Edit JS fully loaded (Phase 8 - v1.8.1 - Enhanced Magic Wand Tool)!');
-    console.log('Features: Dark Palleon-style UI, Nested groups, Boolean operations, Keyboard shortcuts, Context menu, Layer Export, Alignment Tools, Distribution, Magnetic Guides, Custom Canvas Sizes, Clipboard Detection, Brush Tool, Eraser Tool, Paint Bucket, Magic Wand (Pixel-Perfect Selection, Add/Subtract/Intersect, Anti-alias, Sample All Layers), Raster Layers');
+    console.log('Overlay Edit JS fully loaded (Phase 8 - v1.8.2 - Zoom Tool & Enhanced Magic Wand)!');
+    console.log('Features: Dark Palleon-style UI, Nested groups, Boolean operations, Keyboard shortcuts, Context menu, Layer Export, Alignment Tools, Distribution, Magnetic Guides, Custom Canvas Sizes, Clipboard Detection, Brush Tool, Eraser Tool, Paint Bucket, Magic Wand (Pixel-Perfect Selection, Add/Subtract/Intersect, Anti-alias, Sample All Layers), Zoom Tool (Zoom In/Out, Fit Screen, Actual Pixels), Raster Layers');
 });

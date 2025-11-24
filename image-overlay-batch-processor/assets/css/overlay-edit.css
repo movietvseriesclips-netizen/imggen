@@ -1767,3 +1767,43 @@ body.tool-wand-active .iobp-canvas-container {
 .tool-wand-active #iobp-wand-settings {
     display: block;
 }
+
+/* Zoom Context Menu */
+.iobp-zoom-context-menu {
+    position: fixed;
+    background: #2b2b2b;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    min-width: 160px;
+    padding: 4px 0;
+}
+
+.iobp-context-menu-item {
+    padding: 8px 16px;
+    color: #e0e0e0;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.iobp-context-menu-item:hover {
+    background: #3a3a3a;
+    color: #ffffff;
+}
+
+.iobp-context-menu-separator {
+    height: 1px;
+    background: #3a3a3a;
+    margin: 4px 0;
+}
+
+/* Zoom tool cursor */
+.tool-zoom-active {
+    cursor: zoom-in;
+}
+
+.tool-zoom-active.zoom-out-mode {
+    cursor: zoom-out;
+}

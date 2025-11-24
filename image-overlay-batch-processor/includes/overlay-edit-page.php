@@ -117,6 +117,12 @@
                                         <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
                                     </svg>
                                 </button>
+                                <button class="iobp-tool-btn" data-tool="zoom" title="Zoom Tool (Z)">
+                                    <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                                        <path d="M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z"/>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                         <div class="iobp-form-group">
@@ -652,6 +658,23 @@
                 <button id="iobp-cancel-custom-size" class="iobp-btn">Cancel</button>
                 <button id="iobp-apply-custom-size" class="iobp-btn iobp-btn-primary">Create Canvas</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Zoom Tool Context Menu -->
+    <div id="iobp-zoom-context-menu" class="iobp-zoom-context-menu" style="display: none;">
+        <div class="iobp-context-menu-item" data-action="zoom-in">
+            <span>Zoom In</span>
+        </div>
+        <div class="iobp-context-menu-item" data-action="zoom-out">
+            <span>Zoom Out</span>
+        </div>
+        <div class="iobp-context-menu-separator"></div>
+        <div class="iobp-context-menu-item" data-action="fit-screen">
+            <span>Fit on Screen</span>
+        </div>
+        <div class="iobp-context-menu-item" data-action="actual-pixels">
+            <span>Actual Pixels</span>
         </div>
     </div>
 </div>
