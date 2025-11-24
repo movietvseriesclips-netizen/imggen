@@ -93,27 +93,27 @@
                             <label>Active Tool</label>
                             <div class="iobp-tool-palette">
                                 <button class="iobp-tool-btn active" data-tool="select" title="Select Tool (V)">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
                                     </svg>
                                 </button>
                                 <button class="iobp-tool-btn" data-tool="brush" title="Brush Tool (B)">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3zm13.71-9.37l-1.34-1.34c-.39-.39-1.02-.39-1.41 0L9 12.25 11.75 15l8.96-8.96c.39-.39.39-1.02 0-1.41z"/>
                                     </svg>
                                 </button>
                                 <button class="iobp-tool-btn" data-tool="eraser" title="Eraser Tool (E)">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0 1-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83 0M4.22 15.58l3.54 3.53c.78.79 2.04.79 2.83 0l3.53-3.53-6.36-6.36-3.54 3.53c-.78.79-.78 2.05 0 2.83z"/>
                                     </svg>
                                 </button>
                                 <button class="iobp-tool-btn" data-tool="bucket" title="Paint Bucket Tool (G)">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
                                     </svg>
                                 </button>
                                 <button class="iobp-tool-btn" data-tool="wand" title="Magic Wand Tool (W)">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
                                     </svg>
                                 </button>
