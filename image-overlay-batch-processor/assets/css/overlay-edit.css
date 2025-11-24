@@ -1418,6 +1418,24 @@ button[title]:hover::before {
     margin-bottom: 0;
 }
 
+/* Phase 7: Custom Canvas Input Fields - White Text Fix */
+#iobp-custom-width,
+#iobp-custom-height,
+#iobp-preset-name {
+    color: #ffffff !important;
+    background: #252525 !important;
+    border: 1px solid #3a3a3a !important;
+}
+
+#iobp-custom-width:focus,
+#iobp-custom-height:focus,
+#iobp-preset-name:focus {
+    color: #ffffff !important;
+    background: #2a2a2a !important;
+    border-color: #5b7cff !important;
+    outline: none;
+}
+
 /* Orientation Toggle */
 .iobp-orientation-toggle {
     display: flex;
