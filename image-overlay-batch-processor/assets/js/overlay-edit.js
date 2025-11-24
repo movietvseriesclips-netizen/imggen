@@ -2583,6 +2583,428 @@ jQuery(document).ready(function($) {
         }
     });
 
-    console.log('Overlay Edit JS fully loaded (Phase 6 - v2.0.0 - Dark Theme + All Features)!');
-    console.log('Features: Dark Palleon-style UI, Nested groups, Boolean operations, Keyboard shortcuts, Context menu, Layer Export, Alignment Tools, Distribution, Magnetic Guides');
+    // ========================================
+    // PHASE 7: CUSTOM CANVAS SIZE WITH CLIPBOARD DETECTION
+    // ========================================
+
+    console.log('Phase 7: Custom Canvas Size with Clipboard Detection - Initializing...');
+
+    var customCanvasSize = null;
+    var clipboardImageData = null;
+    var currentAspectRatio = null;
+
+    // Load custom presets from localStorage
+    function loadCustomPresets() {
+        var presets = localStorage.getItem('iobp_custom_presets');
+        return presets ? JSON.parse(presets) : [];
+    }
+
+    // Save custom presets to localStorage
+    function saveCustomPresets(presets) {
+        localStorage.setItem('iobp_custom_presets', JSON.stringify(presets));
+    }
+
+    // Render custom presets in UI
+    function renderCustomPresets() {
+        var presets = loadCustomPresets();
+        var $container = $('#iobp-custom-presets-container');
+        $container.empty();
+
+        if (presets.length === 0) return;
+
+        presets.forEach(function(preset, index) {
+            var $presetItem = $('<div class="iobp-preset-item"></div>');
+            $presetItem.append('<span class="iobp-preset-name">' + preset.name + '</span>');
+            $presetItem.append('<span class="iobp-preset-size">' + preset.width + 'x' + preset.height + '</span>');
+
+            var $deleteBtn = $('<button class="iobp-preset-delete">×</button>');
+            $deleteBtn.on('click', function(e) {
+                e.stopPropagation();
+                if (confirm('Delete preset "' + preset.name + '"?')) {
+                    presets.splice(index, 1);
+                    saveCustomPresets(presets);
+                    renderCustomPresets();
+                }
+            });
+
+            $presetItem.append($deleteBtn);
+
+            $presetItem.on('click', function() {
+                applyCustomCanvasSize(preset.width, preset.height, preset.name);
+            });
+
+            $container.append($presetItem);
+        });
+    }
+
+    // Apply custom canvas size
+    function applyCustomCanvasSize(width, height, name) {
+        if (canvas && canvas.getObjects().length > 0) {
+            if (!confirm('Changing canvas size will clear all work. Continue?')) {
+                return;
+            }
+        }
+
+        console.log('Applying custom canvas size:', width, 'x', height);
+
+        // Store custom size in config
+        var customKey = 'custom_' + width + 'x' + height;
+        canvasConfig[customKey] = {
+            canvas_width: parseInt(width, 10),
+            canvas_height: parseInt(height, 10),
+            crop_width: parseInt(width, 10),
+            crop_height: parseInt(height, 10),
+            no_crop: true
+        };
+
+        selectedCanvasSize = customKey;
+        customCanvasSize = { width: width, height: height, name: name || 'Custom' };
+
+        // Reinitialize canvas with new size
+        initCanvas(selectedCanvasSize);
+        layerGroups = {};
+        refreshLayerPanel();
+
+        console.log('Custom canvas created:', width, 'x', height);
+    }
+
+    // Clipboard detection
+    async function detectClipboardImage() {
+        console.log('Detecting clipboard image...');
+
+        if (!navigator.clipboard || !navigator.clipboard.read) {
+            console.warn('Clipboard API not supported. Browser compatibility fallback needed.');
+            return { hasImage: false, error: 'Clipboard API not supported' };
+        }
+
+        try {
+            const permission = await navigator.permissions.query({ name: 'clipboard-read' });
+            console.log('Clipboard permission:', permission.state);
+
+            const clipboardItems = await navigator.clipboard.read();
+
+            for (const item of clipboardItems) {
+                console.log('Clipboard item types:', item.types);
+
+                for (const type of item.types) {
+                    if (type.startsWith('image/')) {
+                        const blob = await item.getType(type);
+                        const img = new Image();
+                        const url = URL.createObjectURL(blob);
+
+                        img.src = url;
+                        await new Promise((resolve) => {
+                            img.onload = resolve;
+                        });
+
+                        console.log('Clipboard image detected:', img.naturalWidth, 'x', img.naturalHeight);
+
+                        return {
+                            hasImage: true,
+                            width: img.naturalWidth,
+                            height: img.naturalHeight,
+                            blob: blob,
+                            url: url
+                        };
+                    }
+                }
+            }
+
+            return { hasImage: false };
+        } catch (err) {
+            console.error('Clipboard detection error:', err);
+            return { hasImage: false, error: err.message };
+        }
+    }
+
+    // Open custom size dialog
+    async function openCustomSizeDialog() {
+        console.log('Opening custom size dialog...');
+
+        // Reset form
+        $('#iobp-custom-width').val(1920);
+        $('#iobp-custom-height').val(1080);
+        $('#iobp-constrain-proportions').prop('checked', false);
+        $('#iobp-preset-name').val('');
+        $('#iobp-paste-clipboard-image').prop('checked', false);
+        $('#iobp-clipboard-banner').hide();
+        $('#iobp-clipboard-preview-container').hide();
+        $('#iobp-paste-option').hide();
+
+        // Update orientation buttons
+        updateOrientationButtons();
+
+        // Detect clipboard image
+        clipboardImageData = await detectClipboardImage();
+
+        if (clipboardImageData.hasImage) {
+            console.log('Clipboard image found:', clipboardImageData.width, 'x', clipboardImageData.height);
+
+            // Show clipboard banner
+            $('#iobp-clipboard-info').text('📋 Image detected on clipboard (' + clipboardImageData.width + 'x' + clipboardImageData.height + ')');
+            $('#iobp-clipboard-banner').show();
+
+            // Show preview
+            $('#iobp-clipboard-preview').attr('src', clipboardImageData.url);
+            $('#iobp-clipboard-preview-container').show();
+
+            // Show paste option
+            $('#iobp-paste-option').show();
+
+            // Pre-fill dimensions
+            $('#iobp-custom-width').val(clipboardImageData.width);
+            $('#iobp-custom-height').val(clipboardImageData.height);
+
+            currentAspectRatio = clipboardImageData.width / clipboardImageData.height;
+        } else {
+            currentAspectRatio = 1920 / 1080;
+        }
+
+        // Show modal
+        $('#iobp-custom-size-modal').addClass('active');
+    }
+
+    // Close custom size dialog
+    function closeCustomSizeDialog() {
+        $('#iobp-custom-size-modal').removeClass('active');
+
+        // Clean up clipboard preview URL
+        if (clipboardImageData && clipboardImageData.url) {
+            URL.revokeObjectURL(clipboardImageData.url);
+        }
+        clipboardImageData = null;
+    }
+
+    // Update orientation buttons
+    function updateOrientationButtons() {
+        var width = parseInt($('#iobp-custom-width').val(), 10);
+        var height = parseInt($('#iobp-custom-height').val(), 10);
+
+        if (width > height) {
+            $('#iobp-orientation-landscape').addClass('active');
+            $('#iobp-orientation-portrait').removeClass('active');
+        } else {
+            $('#iobp-orientation-landscape').removeClass('active');
+            $('#iobp-orientation-portrait').addClass('active');
+        }
+    }
+
+    // Event: Custom Size Button
+    $('#iobp-custom-size-btn').on('click', function() {
+        openCustomSizeDialog();
+    });
+
+    // Event: Close Modal
+    $('.iobp-modal-close, #iobp-cancel-custom-size').on('click', function() {
+        closeCustomSizeDialog();
+    });
+
+    // Event: Use Clipboard Size Button
+    $('#iobp-use-clipboard-size').on('click', function() {
+        if (clipboardImageData && clipboardImageData.hasImage) {
+            $('#iobp-custom-width').val(clipboardImageData.width);
+            $('#iobp-custom-height').val(clipboardImageData.height);
+            currentAspectRatio = clipboardImageData.width / clipboardImageData.height;
+            updateOrientationButtons();
+        }
+    });
+
+    // Event: Constrain Proportions
+    var lastWidth = 1920;
+    var lastHeight = 1080;
+
+    $('#iobp-custom-width').on('input', function() {
+        var newWidth = parseInt($(this).val(), 10);
+
+        if ($('#iobp-constrain-proportions').prop('checked') && currentAspectRatio) {
+            var newHeight = Math.round(newWidth / currentAspectRatio);
+            $('#iobp-custom-height').val(newHeight);
+        }
+
+        lastWidth = newWidth;
+        updateOrientationButtons();
+    });
+
+    $('#iobp-custom-height').on('input', function() {
+        var newHeight = parseInt($(this).val(), 10);
+
+        if ($('#iobp-constrain-proportions').prop('checked') && currentAspectRatio) {
+            var newWidth = Math.round(newHeight * currentAspectRatio);
+            $('#iobp-custom-width').val(newWidth);
+        }
+
+        lastHeight = newHeight;
+        updateOrientationButtons();
+    });
+
+    $('#iobp-constrain-proportions').on('change', function() {
+        if ($(this).prop('checked')) {
+            var width = parseInt($('#iobp-custom-width').val(), 10);
+            var height = parseInt($('#iobp-custom-height').val(), 10);
+            currentAspectRatio = width / height;
+            console.log('Constrain proportions enabled. Aspect ratio:', currentAspectRatio);
+        }
+    });
+
+    // Event: Orientation Toggle
+    $('#iobp-orientation-landscape').on('click', function() {
+        var width = parseInt($('#iobp-custom-width').val(), 10);
+        var height = parseInt($('#iobp-custom-height').val(), 10);
+
+        if (height > width) {
+            // Swap
+            $('#iobp-custom-width').val(height);
+            $('#iobp-custom-height').val(width);
+
+            if ($('#iobp-constrain-proportions').prop('checked')) {
+                currentAspectRatio = height / width;
+            }
+        }
+
+        updateOrientationButtons();
+    });
+
+    $('#iobp-orientation-portrait').on('click', function() {
+        var width = parseInt($('#iobp-custom-width').val(), 10);
+        var height = parseInt($('#iobp-custom-height').val(), 10);
+
+        if (width > height) {
+            // Swap
+            $('#iobp-custom-width').val(height);
+            $('#iobp-custom-height').val(width);
+
+            if ($('#iobp-constrain-proportions').prop('checked')) {
+                currentAspectRatio = height / width;
+            }
+        }
+
+        updateOrientationButtons();
+    });
+
+    // Event: Apply Custom Size
+    $('#iobp-apply-custom-size').on('click', function() {
+        var width = parseInt($('#iobp-custom-width').val(), 10);
+        var height = parseInt($('#iobp-custom-height').val(), 10);
+        var presetName = $('#iobp-preset-name').val().trim();
+        var pasteClipboard = $('#iobp-paste-clipboard-image').prop('checked');
+
+        // Validation
+        if (isNaN(width) || width < 100 || width > 4000) {
+            alert('Width must be between 100 and 4000 pixels.');
+            return;
+        }
+
+        if (isNaN(height) || height < 100 || height > 4000) {
+            alert('Height must be between 100 and 4000 pixels.');
+            return;
+        }
+
+        // Save as preset if name provided
+        if (presetName) {
+            var presets = loadCustomPresets();
+
+            // Check for duplicate name
+            var existingIndex = presets.findIndex(function(p) {
+                return p.name.toLowerCase() === presetName.toLowerCase();
+            });
+
+            if (existingIndex >= 0) {
+                if (confirm('A preset with this name already exists. Overwrite?')) {
+                    presets[existingIndex] = { name: presetName, width: width, height: height };
+                } else {
+                    return;
+                }
+            } else {
+                presets.push({ name: presetName, width: width, height: height });
+            }
+
+            saveCustomPresets(presets);
+            renderCustomPresets();
+            console.log('Custom preset saved:', presetName, width, 'x', height);
+        }
+
+        // Apply canvas size
+        applyCustomCanvasSize(width, height, presetName || 'Custom');
+
+        // Paste clipboard image if requested
+        if (pasteClipboard && clipboardImageData && clipboardImageData.hasImage) {
+            pasteClipboardImageToCanvas();
+        }
+
+        // Close modal
+        closeCustomSizeDialog();
+    });
+
+    // Event: New from Clipboard (One-Click Workflow)
+    $('#iobp-clipboard-canvas-btn').on('click', async function() {
+        console.log('New from Clipboard - One-click workflow');
+
+        clipboardImageData = await detectClipboardImage();
+
+        if (clipboardImageData.hasImage) {
+            console.log('Clipboard image detected. Creating canvas and pasting image...');
+
+            // Create canvas with clipboard dimensions
+            applyCustomCanvasSize(clipboardImageData.width, clipboardImageData.height, 'From Clipboard');
+
+            // Wait for canvas initialization
+            setTimeout(function() {
+                pasteClipboardImageToCanvas();
+            }, 300);
+        } else {
+            alert('No image found on clipboard. Please copy an image first or use "Custom Size" to manually enter dimensions.');
+            console.warn('No clipboard image found. Opening custom size dialog as fallback...');
+            openCustomSizeDialog();
+        }
+    });
+
+    // Paste clipboard image to canvas
+    function pasteClipboardImageToCanvas() {
+        if (!canvas || !clipboardImageData || !clipboardImageData.hasImage) {
+            console.error('Cannot paste clipboard image. Canvas or clipboard data not available.');
+            return;
+        }
+
+        console.log('Pasting clipboard image to canvas...');
+
+        var imgElement = new Image();
+        imgElement.src = clipboardImageData.url;
+
+        imgElement.onload = function() {
+            fabric.Image.fromURL(clipboardImageData.url, function(img) {
+                var canvasWidth = canvas.getWidth();
+                var canvasHeight = canvas.getHeight();
+
+                // Scale to fit if larger than canvas
+                var scale = 1;
+                if (img.width > canvasWidth || img.height > canvasHeight) {
+                    scale = Math.min(canvasWidth / img.width, canvasHeight / img.height);
+                }
+
+                img.set({
+                    left: (canvasWidth - img.width * scale) / 2,
+                    top: (canvasHeight - img.height * scale) / 2,
+                    scaleX: scale,
+                    scaleY: scale,
+                    selectable: true,
+                    evented: true
+                });
+
+                assignLayerId(img);
+                img.layerName = 'Clipboard Image';
+
+                canvas.add(img);
+                canvas.setActiveObject(img);
+                canvas.renderAll();
+
+                console.log('Clipboard image pasted to canvas successfully.');
+            });
+        };
+    }
+
+    // Initialize: Load and render custom presets
+    renderCustomPresets();
+
+    console.log('Overlay Edit JS fully loaded (Phase 7 - v2.1.0 - Custom Canvas Size + Clipboard Detection)!');
+    console.log('Features: Dark Palleon-style UI, Nested groups, Boolean operations, Keyboard shortcuts, Context menu, Layer Export, Alignment Tools, Distribution, Magnetic Guides, Custom Canvas Sizes, Clipboard Detection');
 });

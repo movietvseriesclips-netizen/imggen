@@ -71,15 +71,16 @@
     border-radius: 6px;
     font-size: 14px;
     min-width: 200px;
-    background: #252525;
-    color: #e0e0e0;
+    background: #252525 !important;
+    color: #ffffff !important;
     transition: all 0.2s;
 }
 
 .iobp-filename-input:focus {
     outline: none;
-    border-color: #5b7cff;
-    background: #2a2a2a;
+    border-color: #5b7cff !important;
+    background: #2a2a2a !important;
+    color: #ffffff !important;
 }
 
 /* ===================================
@@ -227,26 +228,41 @@
 }
 
 /* Inputs */
-.iobp-input {
+.iobp-input,
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+textarea,
+select.iobp-input {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid #3a3a3a;
     border-radius: 6px;
     font-size: 13px;
-    color: #e0e0e0;
-    background: #252525;
+    color: #ffffff !important;
+    background: #252525 !important;
     transition: all 0.2s;
 }
 
-.iobp-input:focus {
+.iobp-input:focus,
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+textarea:focus,
+select.iobp-input:focus {
     outline: none;
-    border-color: #5b7cff;
-    background: #2a2a2a;
+    border-color: #5b7cff !important;
+    background: #2a2a2a !important;
+    color: #ffffff !important;
 }
 
-.iobp-input:disabled {
-    background: #1a1a1a;
-    color: #606060;
+.iobp-input:disabled,
+input[type="text"]:disabled,
+input[type="number"]:disabled {
+    background: #1a1a1a !important;
+    color: #606060 !important;
     cursor: not-allowed;
 }
 
@@ -1283,4 +1299,219 @@ button[title]:hover::before {
 .iobp-sidebar::-webkit-scrollbar-thumb:hover,
 .iobp-layer-list::-webkit-scrollbar-thumb:hover {
     background: #4a4a4a;
+}
+
+/* ===================================
+   PHASE 7: CUSTOM CANVAS SIZE MODAL
+   ================================ */
+
+.iobp-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10000;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.2s ease;
+}
+
+.iobp-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.iobp-modal-content {
+    background: #1a1a1a;
+    border: 1px solid #3a3a3a;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.iobp-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.iobp-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #5b7cff;
+}
+
+.iobp-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    color: #888;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.iobp-modal-close:hover {
+    background: #2a2a2a;
+    color: #fff;
+}
+
+.iobp-modal-body {
+    padding: 24px;
+}
+
+.iobp-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #2a2a2a;
+    background: #0d0d0d;
+    border-radius: 0 0 12px 12px;
+}
+
+/* Clipboard Banner */
+.iobp-clipboard-banner {
+    background: linear-gradient(135deg, #3a7bd5, #5b7cff);
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(91, 124, 255, 0.3);
+}
+
+.iobp-clipboard-banner span {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Form Row for Side-by-Side Inputs */
+.iobp-form-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.iobp-form-row .iobp-form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* Orientation Toggle */
+.iobp-orientation-toggle {
+    display: flex;
+    gap: 8px;
+}
+
+.iobp-orientation-toggle .iobp-btn {
+    flex: 1;
+}
+
+.iobp-orientation-toggle .iobp-btn.active {
+    background: #5b7cff;
+    color: #fff;
+    border-color: #5b7cff;
+}
+
+/* Custom Presets Container */
+#iobp-custom-presets-container {
+    margin-top: 8px;
+}
+
+.iobp-preset-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #252525;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.iobp-preset-item:hover {
+    background: #2a2a2a;
+    border-color: #4a4a4a;
+}
+
+.iobp-preset-name {
+    flex: 1;
+    font-size: 13px;
+    color: #e0e0e0;
+}
+
+.iobp-preset-size {
+    font-size: 12px;
+    color: #888;
+    margin-left: 8px;
+}
+
+.iobp-preset-delete {
+    background: transparent;
+    border: none;
+    color: #ff6b6b;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    margin-left: 8px;
+}
+
+.iobp-preset-delete:hover {
+    background: rgba(255, 107, 107, 0.1);
+}
+
+/* Phase 7 Specific Buttons */
+#iobp-custom-size-btn,
+#iobp-clipboard-canvas-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+}
+
+#iobp-custom-size-btn:hover,
+#iobp-clipboard-canvas-btn:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
