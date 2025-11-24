@@ -71,15 +71,16 @@
     border-radius: 6px;
     font-size: 14px;
     min-width: 200px;
-    background: #252525;
-    color: #e0e0e0;
+    background: #252525 !important;
+    color: #ffffff !important;
     transition: all 0.2s;
 }
 
 .iobp-filename-input:focus {
     outline: none;
-    border-color: #5b7cff;
-    background: #2a2a2a;
+    border-color: #5b7cff !important;
+    background: #2a2a2a !important;
+    color: #ffffff !important;
 }
 
 /* ===================================
@@ -227,26 +228,41 @@
 }
 
 /* Inputs */
-.iobp-input {
+.iobp-input,
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+textarea,
+select.iobp-input {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid #3a3a3a;
     border-radius: 6px;
     font-size: 13px;
-    color: #e0e0e0;
-    background: #252525;
+    color: #ffffff !important;
+    background: #252525 !important;
     transition: all 0.2s;
 }
 
-.iobp-input:focus {
+.iobp-input:focus,
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+textarea:focus,
+select.iobp-input:focus {
     outline: none;
-    border-color: #5b7cff;
-    background: #2a2a2a;
+    border-color: #5b7cff !important;
+    background: #2a2a2a !important;
+    color: #ffffff !important;
 }
 
-.iobp-input:disabled {
-    background: #1a1a1a;
-    color: #606060;
+.iobp-input:disabled,
+input[type="text"]:disabled,
+input[type="number"]:disabled {
+    background: #1a1a1a !important;
+    color: #606060 !important;
     cursor: not-allowed;
 }
 
@@ -1416,24 +1432,6 @@ button[title]:hover::before {
 .iobp-form-row .iobp-form-group {
     flex: 1;
     margin-bottom: 0;
-}
-
-/* Phase 7: Custom Canvas Input Fields - White Text Fix */
-#iobp-custom-width,
-#iobp-custom-height,
-#iobp-preset-name {
-    color: #ffffff !important;
-    background: #252525 !important;
-    border: 1px solid #3a3a3a !important;
-}
-
-#iobp-custom-width:focus,
-#iobp-custom-height:focus,
-#iobp-preset-name:focus {
-    color: #ffffff !important;
-    background: #2a2a2a !important;
-    border-color: #5b7cff !important;
-    outline: none;
 }
 
 /* Orientation Toggle */
